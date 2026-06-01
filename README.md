@@ -13,3 +13,4 @@ Credits for source code:
 * Doctor Clu (https://forums.atariage.com/profile/4709-doctorclu/)
 * The RMAC/RLN authors 2011-2026 (https://rmac.is-slick.com/)
 * Jaguar SDK Utilities (https://github.com/cubanismo/jag_utils/)
+* Pro-Pack Utils (https://github.com/lab313ru/rnc_propack_source)
