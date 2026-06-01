@@ -6,7 +6,16 @@ Currently this source is a WIP, this is being converted from Devpac syntax to Ma
 
 You can find the original source code on this GitHub, or find it here: https://forums.atariage.com/topic/224770-the-atari-jaguar-source-code-thread/#findComment-3693564
 
+Known issues with the source currently:
+* EEPROM/savedata fails to read properly (crashes)
+* Title screen, credits, and hi-score menu don't display
+* Level scroll routines are currently messed up
+* Sound effects are not enabled by default (see EEPROM issue)
+* Not all entities are scripted/mapped correctly
+
 If you'd like to contribute, shoot up a PR (pull request) and I will accept any fixes when I can.
+
+To build the game, run `build.bat` in the root folder. It will produce two files that you must import into the game.
 
 Credits for source code:
 * Andrew Seed (https://forums.atariage.com/profile/36194-seedy1812/)
