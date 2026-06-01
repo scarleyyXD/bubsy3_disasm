@@ -1,0 +1,201 @@
+SPACING		equ	$c
+CONTTXTTAB:
+	dc.b	0-$0A*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0B*SPACING/2+320/2
+CONTNUMTAB:
+	dc.b	'123456789'
+CONTSTAB:
+	dc.b	' SSSSSSSS'
+	even
+SHIT:
+CONTINUEAI:
+	sf	SWITCHES
+    st.b    NoWater
+	OR.B	#NOPAUSEFLAG,GAMEFLAG1			;defeat pause
+	MOVE	PLAYER,D0
+	BEQ.s	.P10
+	MOVE.B	#'2',STRIPBUF+PLRNUM
+	
+.P10:
+	CLR	D6					;load continue fields
+	MOVE.B	CONTINUES,D6
+	MOVE.B	CONTTXTTAB(PC,D6.W),STRIPBUF+CONTX
+	MOVE.B	CONTNUMTAB(PC,D6.W),STRIPBUF+CONTNUM
+	MOVE.B	CONTSTAB(PC,D6.W),STRIPBUF+CONTS
+
+	MOVE.B	#ALPHABET,D0					;flash cursor
+	MOVE.w	STIMER,D6
+	AND.w	#1,D6
+	BNE.s	.B10
+	MOVE.B	#ALPHABET1,D0
+	
+.B10:
+	moveq	#0,d6
+	MOVE.B	OBJAUX5(A5),D6
+	LEA	STRIPBUF+YESCOL,A0
+	MOVE.B	#ALPHABET1,(A0,D6.W)
+	EOR.w	#NOCOL-YESCOL,D6
+	MOVE.B	#ALPHABET,(A0,D6.W)
+	
+	MOVE.B	FADEDIR,D0				;handle clock if not fading
+	BNE	.FADING
+	SUBQ.B	#1,OBJAUX6(A5)
+	BNE.s	.CLOCKDONE
+	SUBQ.B	#1,OBJAUX7(A5)
+	BPL.s	.C1
+
+	st	FADEVAL					;andyseed
+	MOVE.B	#$FC,FADEDIR
+	BRA.s	.FADING
+
+.C1:
+	MOVE.B	FrameRate+1,OBJAUX6(A5)
+	
+	moveq	#'0',D0
+	add.B	OBJAUX7(A5),D0
+	MOVE.B	D0,STRIPBUF+CONTDIGITS+1
+	MOVE.B	#' ',STRIPBUF+CONTDIGITS
+
+.CLOCKDONE:
+	JSR	LRSOUND
+
+	MOVE	EDGESTICK,D0				;check controls
+	AND	#CTRL_LEFT,D0
+	BEQ.s	.NOTLEFT
+	MOVE.B	#0,OBJAUX5(A5)
+	
+.NOTLEFT:
+	MOVE	EDGESTICK,D0
+	AND	#CTRL_RIGHT,D0
+	BEQ.s	.NOTRIGHT
+	MOVE.B	#NOCOL-YESCOL,OBJAUX5(A5)
+	
+.NOTRIGHT:
+	MOVE	EDGESTICK,D0
+	AND	#JOY_A+JOY_B+JOY_X+JOY_Y,D0
+	BEQ.s	.NOBUTTONS
+	MOVE.B	#$FC,FADEDIR
+	
+.NOBUTTONS:
+	MOVE	EDGESTICK,D0
+	AND	#JOY_START,D0
+	BEQ.s	.NOSTART
+	MOVE.B	#$FC,FADEDIR
+	
+.NOSTART:
+	MOVE.B	FADEVAL,D0				;if faded out analyse cursor
+	AND.B	#$F0,D0
+	BNE.s	.NOTFADED
+	
+.FADING:
+	sf	FADEVAL					;andyseed
+	sf	FADEDIR
+	
+	MOVE.B	OBJAUX5(A5),D0
+	BEQ.s	.CONTINUE
+	
+.CONTINUENOT:
+	MOVE	#$FFFF,CONTINUES
+	
+.CONTINUE:
+	AND.B	#~NOPAUSEFLAG,GAMEFLAG1			;turn off this player, enable pause
+        sf.b    NoWater
+	JMP	PLAYERTURNOVER
+
+.NOTFADED:
+	pea	(a5)
+	MOVE.B	OBJAUX5(A5),D6
+	lea	OBJLEN(a5),a5
+
+	move.w	#$0097,OBJY(A5)
+
+	MOVE	#$5C+26-5,D0
+	CMP.B	#0,D6
+	BEQ.s	.YES
+	MOVE	#$AA+26-5-7,D0
+	
+.YES:
+	MOVE	D0,OBJX(A5)
+
+	MOVE	STIMER,D0
+	ASL	#2,D0
+	JSR	GETSIN
+	ASL	#4,D0
+	sf	d0
+	BPL.s	.XPOS
+	st	d0
+	
+.XPOS:
+	ROL	#8,D0
+	ADD	D0,OBJX(A5)
+
+	MOVE	STIMER,D0
+	ASL	#3,D0
+	JSR	GETSIN
+	ASL	#4,D0
+	sf	d0
+	BPL.s	.YPOS
+	st	d0
+	
+.YPOS:
+	ROL	#8,D0
+	ADD	D0,OBJY(A5)
+
+	move.w	OBJX(a5),d0
+	move.w	OBJY(a5),d1
+	add.w	d1,d1
+	add	#ntsc_n_vdb,d1
+	lsl	#3,d1
+	
+	move.w	STIMER,d2
+	not.w	d2
+	lsr	#3,d2
+	and.w	#7,d2
+	add.w	#YARNB_NUMBER+8,d2
+	
+	ADD_OL_MACRO				;a0 returns with address to make an object at
+	movem.w	d0-d2,(a0)
+	move.b	#O_BMO,O_TYPE(a0)		;indicate type of object
+
+	move.l	(sp)+,a5
+	
+	JMP	DRAWTEXT_UN
+
+CONTINUETEXT:	;123456789ABCDEF0123456789ABCDEF
+	dc.b	$FD							;,<SPACING,>SPACING
+	dc.B	(SPACING&$ff00)>>8,(SPACING&$ff)
+ 	
+ 	dc.b	$FE,ALPHABET	      	; OAM0 HIGH
+	dc.b	$FF,0-$08*SPACING/2+320/2,$00,$20,$00
+	dc.b	'PLAYER '
+PLRNUM	equ	(*-CONTINUETEXT)
+	dc.b	'1'
+CONTX	equ	(*-CONTINUETEXT+1)
+	dc.b	$FF,0-$0B*SPACING/2+320/2,$00,$30,$00
+CONTNUM	equ	(*-CONTINUETEXT)
+	dc.b	'0 CONTINUES'
+CONTS	equ	(*-CONTINUETEXT-1)
+	dc.b	$FF,0-$0E*SPACING/2+320/2,$00,$48,$00
+	dc.b	'DO YOU WANT TO'
+	dc.b	$FF,0-$09*SPACING/2+320/2,$00,$58,$00
+	dc.b	'CONTINUE?'
+	dc.b	$FF,0-$02*SPACING/2+320/2,$00,$78,$00
+CONTDIGITS	equ	(*-CONTINUETEXT)
+	dc.b	'10'
+	dc.b	$FF,0-$09*SPACING/2+4+320/2,$00,$98,$00
+YESCOL	equ	(*+1-CONTINUETEXT)
+ 	dc.b	$FE,ALPHABET		; OAM0 HIGH
+	dc.b	'YES      '
+	dc.b	$FF,0-$03*SPACING/2+320/2,$00,$98,$00
+NOCOL	equ	(*+1-CONTINUETEXT)
+ 	dc.b	$FE,ALPHABET	      	; OAM0 HIGH
+	dc.b	'   NO',0
+CONTINUETEXTLEN	equ	(*-CONTINUETEXT)
+	even

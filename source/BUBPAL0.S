@@ -1,0 +1,9 @@
+W1PAL:	dc.b	"BSET1.RGB",0
+W2PAL:	dc.b	"BSET2.RGB",0
+W3PAL:	dc.b	"BSET3.RGB",0
+T3PAL:	dc.b	"BSET3.RGB",0
+W4PAL:	dc.b	"BSET4.CRY",0
+W5PAL:	dc.b	"BSET5.RGB",0
+W6PAL:	dc.b	"BSET6.RGB",0
+BONPAL:	dc.b	"BONPAL.PP",0
+		even
