@@ -1,0 +1,796 @@
+
+SPINNING	EQU %00000001
+DONESPINNING	EQU %00000010
+TALLYING	EQU %00000100
+BUBRUNOFF	EQU %01000000
+FADING		EQU %10000000
+
+ENDINGAI
+	jsr	CLIPY
+	
+	OR.B	#BUBSYOFFSCREEN,GAMEFLAG0					; allow bubsy to near the screen edges
+
+	CMP.L	#OBJBASE,A5							;be sure end is first in the object, hope nothing is tied to 1st object
+	BEQ.s	.FIRST
+	LEA	OBJBASE,A0
+
+	
+	rept	OBJLEN/4
+	move.l	(a5),d0
+	move.l	(a0),(a5)+
+	move.l	d0,(a0)+
+	endr
+	lea	-OBJLEN(a5),a5
+	RTS
+.FIRST	
+
+	JSR	DOINITIALDMA
+	jsr	OBJRANGE			; check if object is too far from bubsy
+	bcc.s	.INRANGE
+	jmp	CLEAROBJWVRAM
+
+
+.INRANGE					;check if we collided with crate
+	AND.B	#~BOSSFLAG,GAMEFLAG1
+
+	MOVE	OBJX(A5),D0							;dont let bubsy run back
+	SUB.w	WINDX,D0
+	CMP.w	#320+$20,D0
+	BCC.s	.NOBACK
+
+	MOVE.w	OBJY(A5),D0
+	ADD.w	#160,D0
+	SUB.w	BUBY,D0
+	BMI.s	.NOBACK
+
+	OR.B	#BOSSFLAG,GAMEFLAG1						;use boss flag to align screen
+.NOBACK
+
+.NOPRIORITY									;process state
+	moveq	#DONESPINNING,D0
+	and.B	OBJFLAGS(A5),D0
+	BEQ.s	.NOTDONESPINNING
+.DONESPINNING
+	moveq	#FADING,D0
+	and.B	OBJFLAGS(A5),D0
+	BNE.s	.FADEOUT
+
+	AND.B	#~TIMEFLAG,GAMEFLAG1						;stop the clock
+	
+	MOVE.B	OBJAUX4(A5),D0
+	ADDQ.B	#1,d0
+	move.b	d0,OBJAUX4(A5)
+.NODMA
+	CMP.B	#40,D0
+	BNE.s	.STILLWAIT
+	JSR	STARTTALLY
+	JMP	CLEAROBJWVRAM
+.STILLWAIT
+.FADEOUT
+	JMP	ENEMYOAMS
+
+.NOTDONESPINNING
+	moveq	#SPINNING,D0
+	and.B	OBJFLAGS(A5),D0							;see if we should start of if we are
+	BNE	.SPINNING
+.NOTSPINNING
+	MOVEq	#0,D0
+	JSR	ENEMYCOLLIDE
+	BCS.s	.COLISION
+.NOCOLISION
+	JMP	ENEMYOAMS
+
+.COLISION
+	TST.w	TIME
+	BEQ.s	.NOCOLISION						;no collision if bubsy is out of time
+	AND.B	#~TIMEFLAG,GAMEFLAG1					;stop the clock
+
+	move.w	WINDX,d0
+	MOVE.w	d0,WINDXMIN						;freeze wind horizontally
+	MOVE.w	d0,BUBXMIN
+	MOVE.w	d0,BUBXMAX
+	ADD.w	#$10,BUBXMIN
+	ADD.w	#320-$10,BUBXMAX
+	
+
+	MOVEq	#POPSOUND5,D0					;start spinning based on vx
+	JSR	STARTSOUND
+
+	OR.B	#SPINNING,OBJFLAGS(A5)
+
+	MOVE.w	BUBVX,D0
+	BPL.s	.VPL
+	NEG	D0
+.VPL
+	lsr.w	#1,d0
+	sf	D0
+	tst.w	d0
+	BNE.s	.VXNOT0
+	ADD.w	#$0100,D0
+.VXNOT0
+	MOVE.B	D0,OBJAUX3(A5)
+	ROR.w	#8,D0
+	MOVE.B	D0,OBJAUX4(A5)
+
+	CLR.w	SHADOWTIMER
+	CLR.w	INVTIMER					;kill all other objects, cancel all VDMA
+	JSR	REQDMAFORTALLY
+
+.SPINNING
+	AND.B	#~TIMEFLAG,GAMEFLAG1				;stop the clock
+
+	moveq	#ANCHORFLAG,D0
+	and.B	BUBSYFLAGS,D0
+	BNE.s	.NOSCROLL
+	MOVE	BUBVY,D0
+	BPL.w	.SCROLL
+.NOSCROLL
+	AND.B	#~SCROLLFLAG,BUBSYFLAGS1
+.SCROLL
+
+	MOVE.B	OBJAUX4(A5),D0
+	LSR.B	#1,D0
+	MOVE.B	OBJAUX3(A5),D1
+	ADDX.B	D1,D0
+	MOVE.B	D0,OBJAUX3(A5)
+	CMP.B	#$8,D0
+	BCS.s	.DRAWFRAME
+
+	MOVE.B	OBJFRAME(A5),D0
+	move.B	D0,OBJAUX7(A5)
+	and.b	#1,D0
+	BNE.s	.NOYARN
+
+	CMP.B	#1,OBJAUX4(A5)
+	BLE.s	.NOYARN
+;	BEQ.s	.NOYARN
+	bsr.s	STARTYARN
+.NOYARN
+	sf	OBJAUX3(A5)
+.GETFRAME
+	moveq	#0,d6
+	MOVE.B	OBJAUX0(A5),D6
+	LEA	SHAPETABLE(pc),A0
+	MOVE.B	(A0,D6.W),D0
+	BPL.s	.STORESHAPE
+	MOVE.B	#6,OBJAUX0(A5)
+	SUBQ.B	#1,OBJAUX4(A5)
+	BNE.s	.GETFRAME
+	OR.B	#DONESPINNING,OBJFLAGS(A5)
+	BRA.s	.GETFRAME
+
+
+	
+.STORESHAPE
+	MOVE.B	D0,OBJAUX7(A5)
+	clr.w	OBJFRAMECTR(A5)
+	MOVE.B	OBJAUX7(A5),OBJFRAME(A5)
+	moveq	#0,d6
+	MOVE.B	OBJAUX0(A5),D6
+	MOVE.B	OBJOAM0(A5),D0
+	bclr	#3,d0				;AND.B	#%11110111,D0
+	OR.B	FLIPTABLE(PC,D6),D0
+	ADDQ.B	#1,OBJAUX0(A5)
+.DRAWFRAME
+	JMP	ENEMYOAMS
+
+
+	;TABLES FOR FLIP STATE
+FLIPTABLE
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00001000
+	dc.b	%00001000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	dc.b	%00000000
+	;TABLE FOR FRAME ADDRESSES
+SHAPETABLE
+	dc.b	0,1,2,3,4,5
+SHAPETABLE1
+	dc.b	6,7,8,3,2,9,0,1,2,3,4,5,$FF
+
+
+STARTYARN1
+
+	BRA.s	SY1
+
+STARTYARN
+	sf	SWITCHES
+	MOVE.w	OBJX(A5),D1
+	MOVE.w	OBJY(A5),D2
+
+SY1
+	moveq	#0,D3
+
+	MOVE.L	A5,-(SP)
+
+	MOVE	#$3FFF,D6
+	JSR	FINDFREEOBJ
+	BCS.s	.RETURN
+	
+	move.w	#$00FF,D7
+	MOVE	#$7FFE,OBJKEY(A5)
+
+
+	MOVE.L	#YARNAI,OBJAI(A5)
+
+	MOVE.L	#YARNMAP,OBJMAP(A5)
+
+	MOVE.w	D1,OBJX(A5)
+	MOVE.w	D2,OBJY(A5)
+
+
+	JSR	RANDOM
+	and.w	d7,d0
+	ADD.w	#$0040,D0
+	moveq	#1,d6
+	AND.B	d0,D6
+	BNE.w	.B0
+	NEG	D0
+.B0
+	ASL.w	#1,D0
+	MOVE.w	D0,OBJAUX0(A5)
+	
+
+	JSR	RANDOM
+	MOVE	D0,d5
+	and.w	d7,d0
+	NEG	D0
+	ASL	#3,D0
+	MOVE	D0,OBJAUX2(A5)
+	LSR.B	#5-1,D5
+	moveq	#%00001100,D0
+	and.b	d5,d0
+	OR.B	D0,OBJFLAGS(A5)
+	MOVE	#$E3F0,OBJOAM0(A5)
+
+	ADDQ	#1,D3
+.RETURN
+	MOVE.L (SP)+,A5
+	RTS
+
+
+REQDMAFORTALLY
+
+	MOVE.L	 A5,-(SP)
+	MOVE.L	#OBJBASE,A5
+	lea	OBJLEN(a5),a5
+.R10
+	MOVE	OBJOAM0(A5),D0
+	AND	#$07FF,D0
+	CMP	#$BC00/$20,D0
+	BLT.s	.R20
+	JSR	CLEAROBJWVRAM
+.R20
+	lea	OBJLEN(a5),A5
+	CMP.L	#OBJBASEEND,A5
+	BNE.s	.R10
+	MOVE.L	(SP)+,A5
+
+
+
+	MOVE	OBJOAM0(A5),D1
+	AND	#%1111100000000000,D1
+	OR	#$FC00/$20,D1
+	MOVE	D1,OBJOAM0(A5)
+
+	RTS
+
+STARTTALLY
+
+	MOVE.L	A5,-(SP)
+
+
+	MOVE.L	#OBJBASE,a5
+	lea	OBJLEN(a5),A5
+	CLR	OBJKEY(A5)
+	MOVE	#%1110000000000000+$680,OBJOAM0(A5)
+	MOVE.L 	#TALLYAI,OBJAI(A5)
+	MOVE.L	#LVLTXTMAP,OBJMAP(A5)
+
+
+	MOVE.w	TIME,OBJAUX4(A5)
+	MOVE.w	YARNS,OBJAUX6(A5)
+
+	MOVE.w	#ENDTXTLEN,D6
+	LEA	ENDTXT,A0
+	LEA	STRIPBUF,A1
+.CTLOOP
+	MOVE.B	(A0)+,(A1)+
+	DBRA	D6,.CTLOOP
+
+	
+	MOVE.B	#ENDSTATE,BUBSTATE
+	MOVE.L	(SP)+,A5
+
+	OR.B	#FADING,OBJFLAGS(A5)
+	RTS
+
+
+DIGITTAB
+ 	dc.b	'0123456789ABCDEF'
+
+
+
+
+TALLYAI
+	sf	SWITCHES
+	lea	STRIPBUF,a6
+	CLR	SHADOWTIMER
+	CLR	INVTIMER
+
+
+	OR.B	#NOPAUSEFLAG,GAMEFLAG1				;defeat pause
+
+	AND.B	#~TIMEFLAG,GAMEFLAG1			;stop the clock
+
+; AUX0123 LVLTXT PTR
+; AUX 4,5 TIME	ODD	WAS 01
+; AUX 6,7 YARNS ODD	WAS 56
+
+;	WAS	IS
+;AUX 1	4 ; TIME HIGH
+;AUX 0	5 ; TIME LOW
+;AUX 6	6 ; YARNS HIGH
+;AUX 5	7 ; YARNS LOW
+;AUX 7	0 ; SPIN REG
+
+
+	moveq	#1,D0
+	and.B	OBJAUX5(A5),D0
+	BEQ.s	.NOTODD
+
+	lea	SCORE+3,a0
+	SUBQ.B	#1,OBJAUX5(A5)						;decrement time and yarns align to even values
+
+	AND	#~(FlagX|FlagC),CCR
+	MOVE.B	#$10,D1
+	MOVE.B	(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	sf	D1	
+	MOVE.B	-(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	MOVE.B	-(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	MOVE.B	-(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+
+
+.NOTODD
+	MOVE.w	OBJAUX4(A5),D0
+	BEQ.s	.NOTIME
+
+	MOVE.B	OBJAUX5(A5),D0
+	MOVEq	#$02,D1
+	
+	AND	#~(FlagX|FlagC),CCR
+	SBCD	D1,D0
+	MOVE.B	D0,OBJAUX5(A5)
+	sf	D1
+	MOVE.B	OBJAUX4(A5),D0
+	SBCD	D1,D0
+	MOVE.B	D0,OBJAUX4(A5)
+
+	CMP.B	#$99,OBJAUX5(A5)
+	BNE.s	.NOMINUTES
+	MOVE.B	#$59,OBJAUX5(A5)
+
+
+.NOMINUTES
+	lea	SCORE+3,a0
+	MOVEq	#$20,D1
+	AND	#~(FlagX|FlagC),CCR
+	MOVE.B	(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	sf	D1	
+	MOVE.B	-(a0),d0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	MOVE.B	-(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	MOVE.B	-(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	BRA.s 	.COUNTING
+
+.NOTIME
+	tst.w	OBJAUX6(A5)
+	BEQ.s	.NOYARN
+
+	MOVE.B	OBJAUX7(A5),D0
+	MOVE.B	OBJAUX6(A5),D3
+	MOVEq	#$01,D1
+	MOVEq	#$00,D2
+	AND	#~(FlagX|FlagC),CCR
+	SBCD	D1,D0
+	SBCD	D2,D3
+	MOVE.B	D0,OBJAUX7(A5)
+	MOVE.B	D3,OBJAUX6(A5)
+
+	MOVEq	#$10,D1							;a dime a yarn
+	
+	lea	SCORE+3,a0
+	AND	#~(FlagX|FlagC),CCR
+	
+	MOVE.B	(a0),D0
+	ABCD	D1,D0
+	MOVE.B	D0,(a0)
+	
+	MOVE.B	-(a0),d0
+	ABCD	D2,D0
+	MOVE.B	D0,(a0)
+	
+	MOVE.B	-(a0),D0
+	ABCD	D2,D0
+	MOVE.B	D0,(a0)
+	
+	MOVE.B	-(a0),D0
+	ABCD	D2,D0
+	MOVE.B	D0,(a0)
+.NOYARN
+
+
+.COUNTING
+.NODEC
+	LEA	DIGITTAB(pc),A0							load time field
+	moveq	#$f,d0
+	and.B	OBJAUX4(A5),D0
+	MOVE.B	(A0,D0.W),D0
+	MOVE.B	D0,ETOFS(a6)
+
+	MOVE.B	OBJAUX5(A5),D0
+	LSR.w	#4,D0
+	AND.w	#$F,D0
+	MOVE.B	(A0,D0.W),D0
+	MOVE.B	D0,ETOFS+2(a6)
+
+	moveq	#$F,D0
+	and.B	OBJAUX5(A5),D0
+	MOVE.B	(A0,D0.W),D0
+	MOVE.B	D0,ETOFS+3(a6)
+
+
+	moveq	#$F,D0
+	and.B	OBJAUX6(A5),D0						load yarn fields
+	BNE.s	.NOTY0
+	MOVE.B	#' ',D0
+	BRA.s	.KILY0
+.NOTY0 
+	MOVE.B	(A0,D0.W),D0
+.KILY0
+	MOVE.B	D0,YBOFS(a6)
+
+	MOVE.B	OBJAUX7(A5),D0
+	AND.b	#$F0,D0
+	BNE.s	.NOTY1
+	TST.B	OBJAUX6(A5)
+	BNE.s	.NOTY1
+	MOVEq	#' ',D0
+	BRA.s	.KILY1
+.NOTY1
+	LSR	#4,D0
+	MOVE.B	(A0,D0.W),D0
+.KILY1
+	MOVE.B	D0,YBOFS+1(a6)
+
+	moveq	#$F,D0
+	and.B	OBJAUX7(A5),D0
+	MOVE.B	(A0,D0.W),D0
+	MOVE.B	D0,YBOFS+2(a6)
+
+	MOVE.w	OBJAUX4(A5),D0							;wait for tallys to run out
+	OR.w	OBJAUX6(A5),D0
+	BNE	.NOTEXPANDED
+
+	ADDQ.B	#1,OBJAUX0(A5)
+	CMP.B	#40,OBJAUX0(A5)
+	BCS.s	.NOTEXPANDED
+
+	MOVE.B	ETPOS0+1(a6),D0
+	ASL	#8,D0
+	MOVE.B	ETPOS0(a6),D0
+	ADDq	#$10/2,D0
+	MOVE.B	D0,ETPOS0(a6)
+	MOVE.B	D0,ETPOS1(a6)
+	LSR	#8,D0
+	MOVE.B	D0,ETPOS0+1(a6)
+	MOVE.B	D0,ETPOS1+1(a6)
+
+	MOVE.B	ETSPACING(a6),D0
+	ASL	#8,D0
+	MOVE.B	ETSPACING+1(a6),D0
+	SUBQ	#1,D0
+	MOVE.B	D0,ETSPACING+1(a6)
+	ROR	#8,D0
+	MOVE.B	D0,ETSPACING(a6)
+
+	TST.w	D0
+	BNE.s	.NOTEXPANDED
+	MOVE.B	ETPOS0(a6),d0
+	move.b	d0,ETPOS2(a6)
+	MOVE.B	d0,ETPOS3(a6)
+	MOVE.B	ETPOS0+1(a6),d0
+	move.b	d0,ETPOS2+1(a6)
+	MOVE.B	d0,ETPOS3+1(a6)
+
+	MOVE.B	ETSPACING(a6),d0
+	move.b	d0,ETSPACING1(a6)
+	MOVE.B	d0,ETSPACING3(a6)
+	MOVE.B	ETSPACING+1(a6),d0
+	move.b	d0,ETSPACING1+1(a6)
+	MOVE.B	d0,ETSPACING3+1(a6)
+
+	MOVE.L	#PASSCODEAI,OBJAI(A5)
+.NOTEXPANDED
+
+	MOVE.L	#STRIPBUF,D0
+	MOVE	D0,OBJAUX2(A5)
+	SWAP	D0
+	MOVE.B	D0,OBJAUX1(A5)
+	move.l	#DRAWTEXT_UN,ROUTINE_ADDR
+	move.l	a5,ROUTINE_VAR
+	rts
+
+PASSCODEAI
+	lea	STRIPBUF,a6
+	AND.B	#~TIMEFLAG,GAMEFLAG1						;stop the clock
+
+	move.w	LEVEL,d0
+	cmp.w	#15-1,d0
+	bne	.B10
+	st	signal_game_complete
+
+.FUCKME
+	jsr	NEW_OL
+	jsr	NEW_OL
+	ADDQ.w	#1,LEVEL								;next level
+	
+	moveq	#0,d0
+	jsr	SegaFader
+
+
+	MOVE.L	#SYSDP,A5
+
+	CLR.w	YARNS									;set yarns to 0
+
+	MOVE.B	#SHOWLVLTXT,PLAYERFLAGS							;flag show title
+
+	MOVE	#OBJENFLAGSLEN-1,D0							;init OBJENFLAGS to 0
+	LEA	OBJENFLAGS,A0
+.OEC
+	sf	(A0,D0.W)
+	DBRA	D0,.OEC
+
+	moveq	#0,d0
+	move.w	LEVEL,d0								;init start time and location
+	asl.w	#2,d0
+	move.l	d0,a0
+	add.l	#LEVELTAB,a0
+	move.l	(a0),a0
+	move.w	LVLINITX(a0),BUBSTARTX
+	move.w	LVLINITY(a0),BUBSTARTY
+	move.w	#LEVELTIME,BUBSTARTTIME
+
+
+	moveq	#0,d0
+	jsr	SegaFader
+
+
+	OR.B	#SHOWLVLTXT,PLAYERFLAGS
+
+	AND.B	#~NOPAUSEFLAG,GAMEFLAG1
+
+
+	AND.B	#~YARNLIFEFLAG,GAMEFLAG0
+
+	JMP	PLAYERTURNOVER
+
+
+.B10
+	MOVE.B	ETSPACING1(a6),D0
+	ASL.w	#8,D0
+	MOVE.B	ETSPACING1+1(a6),D0
+	CMP.w	#$C,D0
+	BEQ	.DONECONTRACT
+	ADDQ.w	#1,D0
+	MOVE.B	D0,ETSPACING1+1(a6)
+	MOVE.B	D0,ETSPACING3+1(a6)
+	LSR.w	#8,D0
+	MOVE.B	D0,ETSPACING1(a6)
+	MOVE.B	D0,ETSPACING3(a6)
+
+	MOVE.B	ETPOS2+1(a6),D0
+	ASL.w	#8,D0
+	MOVE.B	ETPOS2(a6),D0
+	SUBQ	#$10/2,D0
+	
+	MOVE.B	D0,ETPOS2(a6)
+	MOVE.B	D0,ETPOS3(a6)
+	MOVE.B	D0,ETPOS6(a6)
+	MOVE.B	D0,ETPOS8(a6)
+	MOVE.B	D0,ETPOS9(a6)
+	MOVE.B	D0,ETPOSA(a6)
+	LSR	#8,D0
+	MOVE.B	D0,ETPOS2+1(a6)
+	MOVE.B	D0,ETPOS3+1(a6)
+	MOVE.B	D0,ETPOS6+1(a6)
+	MOVE.B	D0,ETPOS8+1(a6)
+	MOVE.B	D0,ETPOS9+1(a6)
+	MOVE.B	D0,ETPOSA+1(a6)
+	
+
+	
+	MOVE.w	LEVEL,D1
+	ADDQ.B	#1,D1
+	MULU.w	#6,D1
+	ADD.w	#60-6,D1
+	MOVE.B	D1,OBJAUX5(A5)
+	MOVE.B	#60,OBJAUX7(A5)
+	JMP	.DRAWTXT
+.DONECONTRACT
+
+
+	TST.w	EDGESTICK
+	BNE	.FUCKME
+
+
+.DRAWTXT
+	MOVE.L	#STRIPBUF+ENDTXT1,OBJAUX0(A5)	; PASSCODE.
+	cmp.w	#15,LEVEL
+	BNE.s	.DRAWPWD	
+	MOVE.L	#STRIPBUF+ENDTXT3,OBJAUX0(A5)
+	BRA.s	.DRAWPWD
+.JUSTPRESS
+
+	MOVE.B	#$F8,ETPOS2+2(a6)
+	sf	ETPOS2+2+1(a6)
+	MOVE.B	#$48,ETPOS3+2(a6)
+	sf	ETPOS3+2+1(a6)
+
+	lea	12(a0),a0
+	move.l	#'    ',d0
+	MOVE.L	d0,-(A0)
+	MOVE.L	d0,-(A0)
+	MOVE.L	d0,-(A0)
+
+.DRAWPWD
+	LEA	6+PASSCODES,A0			;point to next levels password
+	move.w	LEVEL,d1
+	mulu	#6,d1
+	add.w	d1,a0
+	lea	STRIPBUF+ETPASS,a1
+	rept	6
+	MOVE.B	(A0)+,(a1)+
+	endr
+
+	move.l	#DRAWTEXT_UN,ROUTINE_ADDR
+	move.l	a5,ROUTINE_VAR
+	rts
+
+PASSCODES
+	IFNE	CONSULT
+ 	dc.b	'111111'		;level	01
+ 	dc.b	'222222'		;level	02
+ 	dc.b	'333333'		;level	03
+ 	dc.b	'444444'		;level	04
+ 	dc.b	'555555'		;level	05
+ 	dc.b	'666666'		;level	06
+ 	dc.b	'777777'		;level	07
+ 	dc.b	'888888'		;level	08
+ 	dc.b	'999999'		;level	09
+ 	dc.b	'121212'		;level	10
+ 	dc.b	'131313'		;level	11
+ 	dc.b	'141414'		;level	12
+ 	dc.b	'151515'		;level	13
+ 	dc.b	'161616'		;level	14
+ 	dc.b	'171717'		;level	15
+
+ 	dc.b	'111111'		;level	16		;do not exist
+ 	dc.b	'111111'		;level	17
+ 	dc.b	'111111'		;level	18
+	
+	ELSE
+	
+	dc.b	'111111'		;level	01
+ 	dc.b	'392652'		;level	02
+ 	dc.b	'458227'		;level	03
+ 	dc.b	'958936'		;level	04
+ 	dc.b	'739294'		;level	05
+ 	dc.b	'184792'		;level	06
+ 	dc.b	'812615'		;level	07
+ 	dc.b	'781367'		;level	08
+ 	dc.b	'126712'		;level	09
+ 	dc.b	'236721'		;level	10
+ 	dc.b	'673167'		;level	11
+ 	dc.b	'792323'		;level	12
+ 	dc.b	'672328'		;level	13
+ 	dc.b	'782389'		;level	14
+ 	dc.b	'672345'		;level	15
+
+ 	dc.b	'111111'		;level	16		;do not exist
+ 	dc.b	'111111'		;level	17
+ 	dc.b	'111111'		;level	18
+	
+	
+	
+	ENDC
+
+SPACING1	EQU	$C
+ENDTXT		;123456789ABCDEF0123456789ABCDEF
+ETSPACING	EQU *-ENDTXT+1
+	dc.b	$FD						;,<SPACING1,>SPACING1
+	dc.B	(SPACING1&$ff00)>>8,(SPACING1&$ff)
+	dc.b	$fe,ALPHABET
+ETPOS0	EQU	*-ENDTXT+1
+	dc.b	$ff,0-$10*SPACING1/2+(320/2),0,$40,0
+	dc.b	'EXTRA TIME  '
+ETOFS	EQU	*-ENDTXT
+	dc.b	' :  '
+ETPOS1	EQU	*-ENDTXT+1
+	dc.b	$FF,0-21*SPACING1/2+(320/2),0,$60,0
+	dc.b	'BALLS COLLECTED  '
+YBOFS	EQU	*-ENDTXT
+	dc.b	'   '
+	dc.b	0 
+ENDTXT1	EQU	*-ENDTXT
+
+**************************************************************************
+
+	;123456789ABCDEF0123456789ABCDEF
+ETSPACING1	EQU *-ENDTXT+1
+	dc.b	$FD						;,<SPACING1,>SPACING1
+	dc.B	(SPACING1&$ff00)>>8,(SPACING1&$ff)
+	dc.b	$fe,ALPHABET
+ETPOS2	EQU	*-ENDTXT+1
+	dc.b	$FF,0-16*SPACING1/2+(320/2),0,$40,$00
+	dc.b	$fe,ALPHABET
+	dc.b	'PASSCODE: XXXXXX'
+ETPASS	EQU	*-ENDTXT-6
+
+ETPOS3	EQU	*-ENDTXT+1
+	dc.b	$FF,0-16*SPACING1/2+(320/2),0,$58,$00
+	dc.b	$fe,ALPHABET
+	dc.b	'PRESS ANY BUTTON',0
+ENDTXT3	EQU	*-ENDTXT
+
+**************************************************************************
+	;123456789ABCDEF0123456789ABCDEF
+ETSPACING3	EQU *-ENDTXT+1
+	dc.b	$FD,(SPACING1&$ff00)>>8,(SPACING1&$ff)
+ETPOS6	EQU	*-ENDTXT+1
+	dc.b	$FF,0-$10*SPACING1/2+(320/2),0,$30,$00
+	dc.b	$fe,ALPHABET
+	dc.b	'     I WIN!'
+ETPOS8	EQU	*-ENDTXT+1
+	dc.b	$FF,0-$10*SPACING1/2+(320/2),0,$50,$00
+	dc.b	$fe,ALPHABET
+	dc.b	'   I GUESS YOU  '
+ETPOS9	EQU	*-ENDTXT+1
+	dc.b	$FF,0-$10*SPACING1/2+(320/2),0,$60,$00
+	dc.b	$fe,ALPHABET
+	dc.b	'     HELPED.    '
+ETPOSA	EQU	*-ENDTXT+1
+	dc.b	$FF,0-16*SPACING1/2+(320/2),0,$88,$00
+	dc.b	$fe,ALPHABET
+	dc.b	'PRESS ANY BUTTON',0
+ENDTXTLEN	EQU	*-ENDTXT
+	even
+**************************************************************************

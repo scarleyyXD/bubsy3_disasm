@@ -1,0 +1,224 @@
+
+YARNAI	JSR	OBJRANGE
+	BCC.s	.NORANGE
+	JMP	CLEAROBJ
+.NORANGE
+	lea	CLIPY,a6
+	move.b	OBJAUX4(a5),d7
+	and.b	#%10000000,d0
+	bne.s	.same
+	lea	CLIPY,a6
+.same	
+	JSR	(a6)
+	TST.B	OBJAUX6(A5)
+	BNE.w	.COLLIDEDBEFORE
+	JSR	ENEMYCOLLIDE
+	BCS.w	.COLLIDED
+	
+	move.b	OBJFLAGS(a5),d5
+	moveq	#%00100000,D0
+	and.B	d5,D0					;colour cycle yarn !
+	BEQ.s	.NOCYCLE
+	MOVE.B	STIMER+1,D0
+	ADDq.B	#2,D0
+	AND.B	#%0111,D0
+	BNE.s	.NOCYCLE
+	AND.B	#~%00001100,d5
+	JSR	RANDOM
+	AND.B	#%00001100,D0
+	or.b	d0,d5
+	move.b	d5,OBJFLAGS(A5)
+.NOCYCLE							; LOAD OAM FIELD BASED ON COLOR FLAGS
+	moveq	#BONUSFLAG,D0
+	and.b	GAMEFLAG1,D0
+	BEQ.s	.NOBONUS
+	MOVEq	#20,D0
+	BRA.s	.BONUS
+.NOBONUS
+	MOVE.w	LEVEL,D0
+.BONUS
+	AND.w	#$0800,OBJOAM0(A5)				; CLEAR ALL BUT HFLIP
+	moveq	#%0000000000001100,D1
+	and.B	d5,D1
+	add.b	d1,d1
+	ADD.w	D1,D0
+	OR.w	D0,OBJOAM0(A5)
+
+	move.B	d5,D0					;move yarn if it is that type
+	add.b	d0,d0
+	bcs	.NOTMOVING
+
+.MOVING
+	MOVE.w	OBJX(A5),TEMP8
+	MOVE.w	OBJY(A5),TEMP9
+	JSR	MOVEOBJECT
+	move.b	OBJFLAGS(a5),d5
+	MOVE.w	OBJX(A5),D0
+	CMP.w	MAPWIDP,D0
+	BCC.w	.NOTMOVING
+
+.NOTOFFMATT							;determine in air or on ground
+	moveq	#ANCHORFLAG,D0
+	and.B	d5,D0
+	BEQ.s	.INAIR
+
+.ONGROUND
+	MOVE.w	OBJY(A5),D0
+	SUB.w	TEMP9,D0
+	BMI.s	.DONEMOVING
+	CMP.w	#16,D0
+	BCS.s	.DONEMOVING
+
+	AND.B	#~ANCHORFLAG,d5
+	CLR.w	OBJVY(A5)
+	MOVE.s	TEMP9,OBJY(A5)
+
+.NOFALL
+	BRA.s	.DONEMOVING
+
+.INAIR
+	MOVE.w	OBJX(A5),D1
+	MOVE.w	OBJY(A5),D2
+	JSR	GETATTRIB
+	AND.w	#ATTR_WHAT,D0
+	BEQ.s	.GRAVITY
+
+.BOUNCE
+	JSR	STICKOBJECTTOPLAYFIELD
+	MOVE.w	OBJVY(A5),D0
+	NEG.w	D0
+	TST.w	OBJVX(A5)
+	BEQ.s	.STILL
+	MOVE.w	#-$0300,D0
+.STILL
+	MOVE.w	D0,OBJVY(A5)
+	BRA.s	.DONEMOVING
+
+.GRAVITY
+	ADD.w	#$0030,OBJVY(A5)
+
+.DONEMOVING
+	MOVE.w	OBJX(A5),D1
+	MOVE.w	OBJY(A5),D2
+	JSR	GETATTRIB
+	AND.w	#WALL_CTRL,D0
+	BEQ.s	.NOWALL
+	MOVE.w	TEMP8,OBJX(A5)
+	MOVE.w	TEMP9,OBJY(A5)
+	NEG.w	OBJVX(A5)
+.NOWALL
+
+.NOTMOVING
+	moveq	#%01000000,D0
+	and.B	d5,D0
+	BNE	DRAWYARNFRAME
+	ADDQ.B	#1,OBJAUX5(A5)
+	BPL	DRAWYARNFRAME
+	ADDQ.B	#1,OBJAUX6(A5)
+	ADDQ.B	#1,OBJAUX7(A5)
+	BRA	DRAWYARNFRAME
+	
+.COLLIDED
+	sf	OBJFRAME(a5)
+	clr.w	OBJOAM0(A5)
+	
+	MOVE.w	OBJKEY(A5),D0
+	CMP.w	#$1A00,D0
+	BGE.s	.NOEN
+
+	
+	JSR	OBJENINDEX
+	LEA	OBJENFLAGS,A0
+	OR.B	D0,(A0,D6.W)
+		
+
+.NOEN	lea	SCORE+3,a0
+	moveq	#%1100,D0
+	and.B	d5,D0
+	ADDQ.B	#%0100,D0
+	ASL.w	#2,D0
+	andi.b	#~FlagX,ccr
+	
+	MOVE.B	(a0),D1
+	ABCD	D0,D1
+	MOVE.B	D1,(a0)
+	
+	sf	D0
+	MOVE.B	-(a0),D1
+	ABCD	D0,D1
+	MOVE.B	D1,(a0)
+	
+	MOVE.B	-(a0),D1
+	ABCD	D0,D1
+	MOVE.B	D1,(a0)
+	
+	MOVE.B	-(a0),D1
+	ABCD	D0,D1
+	MOVE.B	D1,(a0)
+
+	MOVEq	#1,D0
+	AND.B	#~%10000,CCR
+	
+	lea	YARNS+1,a0
+	MOVE.B	(a0),D1
+	ABCD	D0,D1
+	MOVE.B	D1,(a0)
+	sf	D0
+	MOVE.B	-(a0),D1
+	ABCD	D0,D1
+	MOVE.B	D1,(a0)
+
+
+	moveq	#%1100,D0
+	and.B	d5,D0
+	LSR.w	#1,D0
+	MOVE.w	.SOUNDTAB(PC,D0.W),D0
+	JSR	STARTSOUND
+.COLLIDEDBEFORE	
+	st	OBJAUX6(A5)
+	st	OBJAUX7(A5)
+	
+	moveq	#%0111,D0
+	and.b	STIMER+1,D0
+	Bne.s	.SAMEFRAME
+	
+.NEXTFRAME
+	ADDQ.B	#1,OBJFRAME(A5)
+.SAMEFRAME	
+	move.b	OBJFRAME(A5),d0
+	cmp.b	#4,d0
+	BNE.s	DRAWYARNFRAMEEXPLODE
+	JMP	CLEAROBJ
+.SOUNDTAB
+ 	dc.w	POPSOUND,POPSOUND3,POPSOUND4,POPSOUND2
+
+DRAWYARNFRAME
+	moveq	#7,d4
+	and.w	YARNADDRESS+2,d4
+	moveq	#%11000,d0
+	and.w	OBJOAM0(a5),d0
+	add.w	d0,d4
+	add.w	#BALLS_OF_WOOL,d4
+	MOVE.w	OBJX(A5),d0
+	MOVE.w	OBJY(A5),d1
+	move.l	OBJMAP(a5),a4
+	add.w	(a4)+,d0
+	add.w	(a4)+,d1
+	sub.w	WINDX,d0
+	sub.w	WINDY,d1
+	move.l	load_overlay_graphics,a0
+	jmp	print_a_sprite_normal
+
+DRAWYARNFRAMEEXPLODE
+	moveq	#7,d4
+	and.w	d0,d4
+	add.w	#BALL_OF_WOOL_EXPLOSION-1,d4
+	MOVE.w	OBJX(A5),d0
+	MOVE.w	OBJY(A5),d1
+	move.l	OBJMAP(a5),a4
+	add.w	(a4)+,d0
+	add.w	(a4)+,d1
+	sub.w	WINDX,d0
+	sub.w	WINDY,d1
+	move.l	load_overlay_graphics,a0
+	jmp	print_a_sprite_normal

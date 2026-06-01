@@ -1,0 +1,277 @@
+ENDING	rts
+	clr.w	d0
+	jsr	SegaFader	;cls
+
+	move.l	#ENDBGC,A0
+	LEA	MAPBASE,A1
+	JSR	file_load
+
+
+	move.l	#ENDBGM,A0
+	LEA	MAPBASE,A1
+	JSR	file_load
+
+	LEA	ENDCHRP,A0
+	LEA	MAPBASE,A1
+	JSR	file_load
+
+
+	sf	FADEVAL
+	move.l	#ENDPAL,CurPal
+	sf	CurPal
+
+
+	move.b	ENDSEQ,TITLESCRCTR
+	move.b	ENDSEQ+1,d0
+	jsr	LOADSCREEN_ENDING
+
+
+	clr.w	WINDY	;position background
+	clr.w	WINDX
+
+	move.w	FrameRate,d0
+	mulu.w	#10,d0
+	move.w	d0,STIMER
+
+	move.b	#16,FADEDIR	;init fader
+	sf	FADEVAL
+
+	JSR	KILLSOUND	;kill all the sound
+
+	JSR	INITAPU	; WWW
+
+	MOVE.L	#TITLESBLOCK,A0
+	JSR	NEW_DOWNLOAD_APU
+
+	moveq	#5,d0	;start playing some music
+	jsr	STARTMUSIC
+
+
+	move.b	#2,NMIVECSEL
+	AND.B	#SNESVBLDISABLE,VBLANKFLAG
+	
+	CLR.W	TITLESCRPTR	;init scr ptr + timer
+	sf	TITLESCRCTR
+	CLR	TEMP9	;desired window position
+	CLR	TEMP8	;item selector for menu, cursor position
+	CLR	TEMP7	;for passcode
+
+PRELOOP_ENDING	;wait for stick to clear
+	move.w	NUMVBLS,d0	;wait for a vbl
+.L10
+	cmp.w	NUMVBLS,d0
+	beq	.L10
+
+	addq.w	#1,STIMER	;handle clock
+
+	jsr	FADER	;fade in
+
+	jsr	GETINPUT	;wait for player to let go of start button
+	move.w	STICK1,d0	;in the title screen stick and edge stick
+	or.w	STICK2,d0	;hold the or'ed values of both controllers
+	move.w	d0,STICK
+	move.w	EDGESTICK1,d0
+	or.w	EDGESTICK2,d0
+	move.w	d0,EDGESTICK
+
+	move.w	STICK,d0
+	andi.w	#JOY_START,d0
+	bne	PRELOOP_ENDING
+
+ENDLOOP
+	addq.w	#1,STIMER	;handle clock
+
+	jsr	ANIMATEEND	;do end animation
+
+	jsr	FADER	;fade in
+
+	jsr	GETINPUT	;wait for a start button
+
+	move.w	STICK1,d0
+	or.w	STICK2,d0
+	move.w	d0,STICK
+	move.w	EDGESTICK1,d0
+	or.w	EDGESTICK2,d0
+	move.w	d0,EDGESTICK
+
+;;;ASB:	; SELECT AND START ON EITHER CONRTOLLER RESETS
+;;;ASB:	; START ON CONTROLLER 1 STARTS SELECTED GAME TYPE
+;;;ASB:	; DEFAULT TO 1 PLAYER
+;;;ASB:	; START ON CONTROLLER 2 STARTS 2 PLAYER GAME
+;;;ASB:	; SELECT ON EITHER CONTROLLER ENTERS
+;;;ASB:	; THE SELECT SCREEN
+;;;ASB:	; ON SELECT SCREEN BOTH CONTROLLERS AFFECT INPUT
+
+	move.w	EDGESTICK,d0
+	andi.w	#JOY_START,d0
+	beq	.NOSTART1
+	bra	EXIT_ENDING
+.NOSTART1
+
+	move.w	NUMVBLS,d0
+.L10
+	cmp.w	NUMVBLS,d0
+	beq	.L10
+	bra	ENDLOOP
+
+EXIT_ENDING	;fade out
+	moveq	#FADEOUTSOUND,d0
+	jsr	STARTSOUND
+
+	move.b	#$f0,FADEDIR
+
+	JSR	CREDCODE
+
+	RTS
+
+ANIMATEEND	;this is the subroutine that animates the title
+	move.b	TITLESCRCTR,d0	;sequence
+	subq.b	#1,d0
+	bmi	.TIMETOANIMATE
+
+	move.b	d0,TITLESCRCTR	;no animate yet, frankenstien return
+	rts
+
+.TIMETOANIMATE
+
+	move.w	TITLESCRPTR,d6	;update scr ptr
+
+.NEXT
+	addq.w	#2,d6
+	lea	ENDSEQ,a0
+	move.w	(a0,d6.w),d0
+	ror.w	#8,d0
+	bpl	.NOTEND
+
+	andi.b	#$ff,d0	;end or sound
+	beq	.END
+
+	jsr	STARTSOUND
+	bra	.NEXT
+
+.END	;if the end is over start fade out
+	ADDQ.L	#4,SP	;pop out of this subroutine and exit
+	JMP	EXIT_ENDING
+
+.NOTEND
+	move.w	d6,TITLESCRPTR
+
+	move.b	(a0,d6.w),TITLESCRCTR	;set time
+
+	move.b	1(a0,d6.w),d0	;set frame and load
+
+
+LOADSCREEN_ENDING
+	andi.w	#$00ff,d0
+	asl.w	#2,d0
+	lea	ENDSCREENS,a0
+	move.l	(a0,d0.w),A0
+	LEA	MAPBASE,A1
+	JSR	file_load
+	rts
+ENDSEQ
+	dc.b	0006*3,000,0002*3,001,0002*3,002,0002*3,003,0002*3,004,0002*3,005,0002*3,006,0002*3,007,0002*3,008,0002*3,009
+	dc.b	0004*3,010,0002*3,011,0008*3,012,0008*3,013,0006*3,014,0006*3,015,0002*3,016,0002*3,017,0002*3,018,0002*3,019
+	dc.b	0002*3,020,0002*3,021,0002*3,022,0002*3,023,0002*3,024,0002*3,025,0004*3,026,0002*3,027,0008*3,028,0008*3,029
+	dc.b	0002*3,030,0002*3,031,0004*3,032,0002*3,033,0002*3,034,0002*3,035,0004*3,036,0002*3,037,0002*3,038,0002*3,039
+	dc.b	0002*3,040,0002*3,041,0002*3,042,0002*3,043,0002*3,044,0002*3,045,0002*3,046,0002*3,047,0002*3,048,0002*3,049
+	dc.b	0002*3,050,0002*3,051,0008*3,052,0002*3,053,0002*3,054,0002*3,055,0002*3,056,0002*3,057,0002*3,058,0002*3,059
+	dc.b	0006*3,060,0006*3,061,0006*3,062,0006*3,063,0006*3,064,0002*3,065,0002*3,066,0002*3,067,0002*3,068,0004*3,069
+	dc.b	0060,069,0060,069,0060,069,0060,069
+	dc.b 	$00,$FF
+
+	even
+ENDCHRP	dc.b "ENDCHRP.PP",0
+ENDM00	dc.b "ENDM00.PP",0
+ENDM01	dc.b "ENDM01.PP",0
+ENDM02	dc.b "ENDM02.PP",0
+ENDM03	dc.b "ENDM03.PP",0
+ENDM04	dc.b "ENDM04.PP",0
+ENDM05	dc.b "ENDM05.PP",0
+ENDM06	dc.b "ENDM06.PP",0
+ENDM07	dc.b "ENDM07.PP",0
+ENDM08	dc.b "ENDM08.PP",0
+ENDM09	dc.b "ENDM09.PP",0
+ENDM10	dc.b "ENDM10.PP",0
+ENDM11	dc.b "ENDM11.PP",0
+ENDM12	dc.b "ENDM12.PP",0
+ENDM13	dc.b "ENDM13.PP",0
+ENDM14	dc.b "ENDM14.PP",0
+ENDM15	dc.b "ENDM15.PP",0
+ENDM16	dc.b "ENDM16.PP",0
+ENDM17	dc.b "ENDM17.PP",0
+ENDM18	dc.b "ENDM18.PP",0
+ENDM19	dc.b "ENDM19.PP",0
+ENDM20	dc.b "ENDM20.PP",0
+ENDM21	dc.b "ENDM21.PP",0
+ENDM22	dc.b "ENDM22.PP",0
+ENDM23	dc.b "ENDM23.PP",0
+ENDM24	dc.b "ENDM24.PP",0
+ENDM25	dc.b "ENDM25.PP",0
+ENDM26	dc.b "ENDM26.PP",0
+ENDM27	dc.b "ENDM27.PP",0
+ENDM28	dc.b "ENDM28.PP",0
+ENDM29	dc.b "ENDM29.PP",0
+ENDM30	dc.b "ENDM30.PP",0
+ENDM31	dc.b "ENDM31.PP",0
+ENDM32	dc.b "ENDM32.PP",0
+ENDM33	dc.b "ENDM33.PP",0
+ENDM34	dc.b "ENDM34.PP",0
+ENDM35	dc.b "ENDM35.PP",0
+ENDM36	dc.b "ENDM36.PP",0
+ENDM37	dc.b "ENDM37.PP",0
+ENDM38	dc.b "ENDM38.PP",0
+ENDM39	dc.b "ENDM39.PP",0
+ENDM40	dc.b "ENDM40.PP",0
+ENDM41	dc.b "ENDM41.PP",0
+ENDM42	dc.b "ENDM42.PP",0
+ENDM43	dc.b "ENDM43.PP",0
+ENDM44	dc.b "ENDM44.PP",0
+ENDM45	dc.b "ENDM45.PP",0
+ENDM46	dc.b "ENDM46.PP",0
+ENDM47	dc.b "ENDM47.PP",0
+ENDM48	dc.b "ENDM48.PP",0
+ENDM49	dc.b "ENDM49.PP",0
+ENDM50	dc.b "ENDM50.PP",0
+ENDM51	dc.b "ENDM51.PP",0
+ENDM52	dc.b "ENDM52.PP",0
+ENDM53	dc.b "ENDM53.PP",0
+ENDM54	dc.b "ENDM54.PP",0
+ENDM55	dc.b "ENDM55.PP",0
+ENDM56	dc.b "ENDM56.PP",0
+ENDM57	dc.b "ENDM57.PP",0
+ENDM58	dc.b "ENDM58.PP",0
+ENDM59	dc.b "ENDM59.PP",0
+ENDM60	dc.b "ENDM60.PP",0
+ENDM61	dc.b "ENDM61.PP",0
+ENDM62	dc.b "ENDM62.PP",0
+ENDM63	dc.b "ENDM63.PP",0
+ENDM64	dc.b "ENDM64.PP",0
+ENDM65	dc.b "ENDM65.PP",0
+ENDM66	dc.b "ENDM66.PP",0
+ENDM67	dc.b "ENDM67.PP",0
+ENDM68	dc.b "ENDM68.PP",0
+ENDM69	dc.b "ENDM69.PP",0
+ENDPAL	dc.b "ENDPAL.PP",0
+
+	even
+	
+ENDSCREENS
+	dc.l	ENDM00,ENDM01,ENDM02,ENDM03
+	dc.l	ENDM04,ENDM05,ENDM06,ENDM07
+	dc.l	ENDM08,ENDM09,ENDM10,ENDM11
+	dc.l	ENDM12,ENDM13,ENDM14,ENDM15
+	dc.l	ENDM16,ENDM17,ENDM18,ENDM19
+	dc.l	ENDM20,ENDM21,ENDM22,ENDM23
+	dc.l	ENDM24,ENDM25,ENDM26,ENDM27
+	dc.l	ENDM28,ENDM29,ENDM30,ENDM31
+	dc.l	ENDM32,ENDM33,ENDM34,ENDM35
+	dc.l	ENDM36,ENDM37,ENDM38,ENDM39
+	dc.l	ENDM40,ENDM41,ENDM42,ENDM43
+	dc.l	ENDM44,ENDM45,ENDM46,ENDM47
+	dc.l	ENDM48,ENDM49,ENDM50,ENDM51
+	dc.l	ENDM52,ENDM53,ENDM54,ENDM55
+	dc.l	ENDM56,ENDM57,ENDM58,ENDM59
+	dc.l	ENDM60,ENDM61,ENDM62,ENDM63
+	dc.l	ENDM64,ENDM65,ENDM66,ENDM67
+	dc.l	ENDM68,ENDM69

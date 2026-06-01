@@ -1,0 +1,14 @@
+BUBBLESAI
+	JSR	DOINITIALDMA
+	moveq	#%111,d0
+	and.w	STIMER,D0
+	BNE.s	.B10
+	move.b	OBJFRAME(A5),d0
+	ADDQ.B	#1,d0
+	CMP.B	#3,d0
+	BNE.s	.B09
+	moveq	#0,d0
+.B09	move.b	d0,OBJFRAME(a5)
+.B10	JMP	ENEMYOAMS
+
+

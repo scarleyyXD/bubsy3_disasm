@@ -1,0 +1,77 @@
+#====================================================================
+# Makefile	EXAMPLES
+#
+#====================================================================
+#
+#====================================================================
+#	Paths
+#====================================================================
+#
+HOME   = d:\jaguar\bubsy
+#
+OBJ    = $(HOME)
+SRC    = $(HOME)
+COMMON = $(HOME)
+INC    = c:\bin
+#
+#====================================================================
+#	Macro & Assembler flags
+#====================================================================
+#
+#
+MACFLAGS    = -i$(HOME) -e
+ALNFLAGS    = -l -a 4000 x x
+ALNFLAGSROM = -l -a 802000 x x
+
+#
+#====================================================================
+#	Default Rules
+#====================================================================
+
+.SUFFIXES:	.o .gas
+
+.gas.o:
+	mac $(MACFLAGS) $*.gas
+
+
+.SUFFIXES:	.o .s
+
+.s.o:
+	mac $(MACFLAGS) $*.s
+
+
+#
+#====================================================================
+#	Dependencies
+#====================================================================
+#
+
+#
+#====================================================================
+#	EXECUTABLES
+#====================================================================
+#
+
+game:	game.o
+	aln $(ALNFLAGS) game.o syn.o gpustuf2.o freddy\gpu.o
+
+test:	stuff_map\scroll2g.s
+	aln $(ALNFLAGS) stuff_map\scroll2g.s
+
+
+main:	freddy\main.o freddy\gpu.o
+	aln $(ALNFLAGS) freddy\main.s freddy\gpu.s
+
+alpha:	junk.o
+	aln $(ALNFLAGS) junk.o
+
+
+rom: rom.o gpustuf2.o
+	aln $(ALNFLAGSROM) rom.o gpustuf2.o
+
+rom1: rom1.o gpustuf2.o
+	aln $(ALNFLAGSROM) rom1.o gpustuf2.o
+
+rom2: rom2.o gpustuf2.o
+	aln $(ALNFLAGSROM) rom2.o gpustuf2.o
+
