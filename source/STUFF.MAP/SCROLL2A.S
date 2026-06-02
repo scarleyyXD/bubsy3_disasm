@@ -162,7 +162,7 @@ down_centre:
 	add.l	(a3)+,a2
 	endr
 MAP_1ALTER	equ	*+2
-	add.l	#2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3))),a6
+	lea	2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3)))(a6),a6
 	bra	blit_line_across
 centre_right:
 	lea	BLOCK_HEIGHT*(PLAYFIELD_WIDTH-1)(a2),a2
@@ -383,7 +383,7 @@ down_centre1:
 	add.l	(a3)+,a2
 	endr
 MAP_3ALTER	equ	*+2
-	add.l	#2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3))),a6
+	lea	2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3)))(a6),a6
 	bra	blit_line_across1
 centre_right1:
 	lea	BLOCK_HEIGHT*(PLAYFIELD_WIDTH-1)(a2),a2
