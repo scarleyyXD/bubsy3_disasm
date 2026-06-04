@@ -2,80 +2,80 @@
 ;macros	for sprite collation
 ;head
 .macro	ashead	o1
-	if \o1 == 0
+	if \o1=0
 	dc.w	0,-25,49-SIDD+75	;h0
 	endif
-	if \o1 == 1
+	if \o1=1
 	dc.w	0,-24,50-SIDD+75		;h1
 	endif
-	if \o1 == 2
+	if \o1=2
 	dc.w	0,-25,51-SIDD+75		;h2
 	endif
-	if \o1 == 3
+	if \o1=3
 	dc.w	0,-26,52-SIDD+75		;h3
 	endif
-	if \o1 == 4
+	if \o1=4
 	dc.w	0,-26,52-SIDD+75		;h3
 	endif
 	.endm
 
 ;wag tail
 .macro	aswag	o1
-	if \o1 == 0
+	if \o1=0
 	dc.w	-20,-38,53-SIDD+75		;w0
 	endif
-	if \o1 == 1
+	if \o1=1
 	dc.w	-24,-37,54-SIDD+75		;w1
 	endif
-	if \o1 == 2
+	if \o1=2
 	dc.w	-31,-33,55-SIDD+75		;w2
 	endif
 
-	if \o1 == 3
+	if \o1=3
 	dc.w	-28,-26,56-SIDD+75		;t0
 	endif
-	if \o1 == 4
+	if \o1=4
 	dc.w	-27,-27,57-SIDD+75		;t1
 	endif
-	if \o1 == 5
+	if \o1=5
 	dc.w	-28,-36,58-SIDD+75		;t2
 	endif
-	if \o1 == 6
+	if \o1=6
 	dc.w	-27,-32,59-SIDD+75		;t3
 	endif
-	if \o1 == 7
+	if \o1=7
 	dc.w	-31,-29,60-SIDD+75		;t4
 	endif
 	.endm
 
 .macro	astoss	o1
-	if \o1 == 0
+	if \o1=0
 	dc.w	-24,-48,45-SIDD+75		;sw0
 	endif
-	if \o1 == 1
+	if \o1=1
 	dc.w	-22,-67,46-SIDD+75		;sw1
 	endif
-	if \o1 == 2
+	if \o1=2
 	dc.w	-24,-71,47-SIDD+75		;sw2
 	endif
 
-	if \o1 == 3
+	if \o1=3
 	dc.w	-22,-76,48-SIDD+75		;st3
 	endif
-	if \o1 == 4
+	if \o1=4
 	dc.w	-24,-71,45-SIDD+75		;st4
 	endif
-	if \o1 == 5
+	if \o1=5
 	dc.w	-22,-67,46-SIDD+75		;st5
 	endif
-	if \o1 == 6
+	if \o1=6
 	dc.w	-24,-48,47-SIDD+75		;st6
 	endif
 	.endm
 
 ;stick tongue out
-.macro	ahiss
-	dc.w	16,-16,\1+62-SIDD+75
+.macro	ahiss	o1
+	dc.w	16,-16,\o1+62-SIDD+75
 	.endm
 
 ;blink close eyes

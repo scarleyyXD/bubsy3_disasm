@@ -123,7 +123,7 @@ title_loop:
 	beq.s	title_loop
 
 skip_title:
-;	bsr	read_hi_score_from_eprom
+	bsr	read_hi_score_from_eprom
 	bsr	init_hi_score
 	
 display_hi_score_loop:
@@ -242,7 +242,7 @@ init_do_hi_score:
 	tst.b	anybody_got_hi_score
 	beq.s	.no
 	
-;	bsr	read_hi_score_from_eprom
+	bsr	read_hi_score_from_eprom
 	bsr	init_hi_score
 	
 .display_hi_score_loop:
@@ -3251,6 +3251,9 @@ hi_conv_buffer		equ	128
 	rts
 	    
 read_hi_score_from_eprom:
+	jsr	restore_eeprom
+	rts	; not right now
+
 	movem.l	d0-a6,-(sp)
 	link	a6,#hi_conv_buffer
 	lea	hi_conv_buffer(a6),a0

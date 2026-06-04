@@ -4,7 +4,8 @@ SIDD	equ	45
 	rs_counter	set	\O1*$10000
 	.endm
 .macro	add_world_sprites label,volume
-	\label	equ	rs_counter+(\volume)
+	\label	equ	rs_counter
+	rs_counter	set	rs_counter+(\volume)
 	.endm
 
 ** global objects + level 1

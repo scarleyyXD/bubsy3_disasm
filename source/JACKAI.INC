@@ -3,7 +3,7 @@
 		include	"aistuff\\jack\\centiai.s"
 		include	"aistuff\\jack\\giantai.s"
 		include	"aistuff\\jack\\hidledge.s"
-		include	"aistuff\\jack\\jplatfrm.s"
+	;	include	"aistuff\\jack\\jplatfrm.s"
 		include	"aistuff\\jack\\knightai.s"
 	;	include	"aistuff\\jack\\peaai.s"
 		include	"aistuff\\jack\\snailai.s"

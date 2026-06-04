@@ -34,10 +34,10 @@ RELEASE equ	8
 	move.l  d0,d1
 	move.l  a1,-(sp)
 
-	if \3 == 2
+	if \3 = 2
 	addq.l  #8,a1
 	endif
-	if \3 == 3
+	if \3 = 3
 	addq.l  #8,a1
 	addq.l  #8,a1
 	endif

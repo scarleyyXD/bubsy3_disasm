@@ -4,9 +4,9 @@ set MACFLAGS=-m68000 -isource -isource\freddy
 set ALNFLAGS=-a 4000 x x
 set ASMOPTS=+o0 +o1 +o2
 
-tools\rmac %MACFLAGS% %ASMOPTS% -l -o gpu.o source\freddy\gpu.s
+tools\rmac %MACFLAGS% %ASMOPTS% -o gpu.o source\freddy\gpu.s
 if %errorlevel% neq 0 goto error
-tools\rmac %MACFLAGS% %ASMOPTS% -o game.o source\game.s
+tools\rmac %MACFLAGS% %ASMOPTS% -l -o game.o source\game.s
 if %errorlevel% neq 0 goto error
 :: -ldbg.prn
 

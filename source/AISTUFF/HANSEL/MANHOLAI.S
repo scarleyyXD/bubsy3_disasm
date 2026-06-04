@@ -176,7 +176,7 @@ X_ADD_MAX	equ	2
 	dc.w	($FFF2+MOFFSETX)&$ffff
 	dc.w	($0000+MOFFSETY)&$ffff
 	dc.l	0	;	1
-	dc.w	20+X_ADD_MAX,44+X_ADD_MAX*2
+	dc.w	20+X_ADD_MAX,44+(X_ADD_MAX*2)
 	dc.w	4,4
 	dc.w	$0000,$0000
 	dc.w	$0000,$0000
@@ -220,7 +220,7 @@ X_ADD_MAX	equ	2
 	dc.w	($FFF2+MOFFSETX)&$ffff
 	dc.w	($0000+MOFFSETY)&$ffff
 	dc.l	0	;	1
-	dc.w	20+X_ADD_MAX,44+X_ADD_MAX*2
+	dc.w	20+X_ADD_MAX,44+(X_ADD_MAX*2)
 	dc.w	4,4
 	dc.w	$0000,$0000
 	dc.w	$0000,$0000

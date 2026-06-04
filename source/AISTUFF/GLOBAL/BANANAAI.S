@@ -123,7 +123,6 @@ BANANACRATEAI:
 	add.w	OBJAUX2(a5),d0
 	move.w	d0,OBJY(a5)
 
-
 	jsr	ENEMYOAMS			;draw banana1
 
 	move.b	OBJAUX5(a5),d6		;get frame for banana2

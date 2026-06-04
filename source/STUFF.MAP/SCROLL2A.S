@@ -76,7 +76,7 @@ scroll_land:
 	move.l	d6,(a5)				;clear the pattern data
 	move.l	d6,4(a5)
 	move.w	map_x(a1),d6			;get the current x position
-	and.w	#($ffff<<BLOCK_BITS)&$ffff,d6	;mask out the shift
+	andi.w	#($ffff<<BLOCK_BITS)&$ffff,d6	;mask out the shift
 	moveq	#0,d7				;now do the same for the y
 ;	move.w	map_y(a1),d7			;position and multiply
 ;	and.w	#($ffff<<BLOCK_BITS)&$ffff,d7	;to get absolute value down
@@ -162,11 +162,11 @@ down_centre:
 	add.l	(a3)+,a2
 	endr
 MAP_1ALTER	equ	*+2
-	lea	2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3)))(a6),a6
+	lea	2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3)))(a6),a6		;add.l->lea
 	bra	blit_line_across
 centre_right:
 	lea	BLOCK_HEIGHT*(PLAYFIELD_WIDTH-1)(a2),a2
-	lea	2*PLAYFIELD_WIDTH-2(a6),a6
+	lea	(2*PLAYFIELD_WIDTH)-2(a6),a6
 centre_left:
 blit_line_down:
 	move.l	#SRCEN|UPDA1|LFU_A|LFU_AN,d0
@@ -179,7 +179,7 @@ blit_line_down:
 .lp:
 	add.l	(a3)+,a2
 MAP_2ALTER	equ	*+2
-	lea	2*MAP_WIDTH-1(a6),a6
+	lea	2*(MAP_WIDTH-1)(a6),a6
 	do_macro_square	2
 	dbf	d3,.lp
 	rts
@@ -213,7 +213,7 @@ initalise_land:
 	moveq	#0,d7
 	move.w	map_x(a1),d7			;get the current x position
 	move.w	d7,previous_x(a1)		;save the last x value
-	and.w	#($ffff<<BLOCK_BITS)&$ffff,d7	;mask out the shift
+	andi.w	#($ffff<<BLOCK_BITS)&$ffff,d7	;mask out the shift
 	move.w	map_y(a1),previous_y(a1)	;save the last y position
 	
 	move.l	d7,d5				;get the x position
@@ -297,7 +297,7 @@ scroll_land1:
 	move.l	d6,(a5)				;clear the pattern data
 	move.l	d6,4(a5)
 	move.w	map_x(a1),d6			;get the current x position
-	and.w	#($ffff<<BLOCK_BITS)&$ffff,d6	;mask out the shift
+	andi.w	#($ffff<<BLOCK_BITS)&$ffff,d6	;mask out the shift
 	moveq	#0,d7				;now do the same for the y
 ;	move.w	map_y(a1),d7			;position and multiply
 ;	and.w	#($ffff<<BLOCK_BITS)&$ffff,d7	;to get absolute value down
@@ -383,11 +383,11 @@ down_centre1:
 	add.l	(a3)+,a2
 	endr
 MAP_3ALTER	equ	*+2
-	lea	2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3)))(a6),a6
+	lea	2*(MAP_WIDTH*((PLAYFIELD_HEIGHT-3)))(a6),a6		;add.l->lea
 	bra	blit_line_across1
 centre_right1:
 	lea	BLOCK_HEIGHT*(PLAYFIELD_WIDTH-1)(a2),a2
-	lea	2*PLAYFIELD_WIDTH-2(a6),a6
+	lea	(2*PLAYFIELD_WIDTH)-2(a6),a6
 centre_left1:
 blit_line_down1:
 	move.l	#SRCEN|UPDA1|LFU_A|LFU_AN,d0
@@ -400,7 +400,7 @@ blit_line_down1:
 .lp:
 	add.l	(a3)+,a2
 MAP_4ALTER	equ	*+2
-	lea	2*MAP_WIDTH-1(a6),a6
+	lea	2*(MAP_WIDTH-1)(a6),a6
 	do_macro_square	0
 	dbf	d3,.lp
 	rts
@@ -432,7 +432,7 @@ initalise_land1:
 	moveq	#0,d7
 	move.w	map_x(a1),d7			;get the current x position
 	move.w	d7,previous_x(a1)		;save the last x value
-	and.w	#($ffff<<BLOCK_BITS)&$ffff,d7	;mask out the shift
+	andi.w	#($ffff<<BLOCK_BITS)&$ffff,d7	;mask out the shift
 	move.w	map_y(a1),previous_y(a1)	;save the last y position
 	
 	move.l	d7,d5				;get the x position

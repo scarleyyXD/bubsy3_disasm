@@ -104,7 +104,7 @@ restart_program1:
 	jsr	ENABLE_F
 	jsr	RESUMEDS
 
-;	jsr	read_hi_score_from_eprom		;decode eeprom
+	jsr	read_hi_score_from_eprom		;decode eeprom
 	
 	lea	my_stack,sp
 	jmp	boot_up_here

@@ -24,67 +24,67 @@
 	.endm
 
 .macro	OCTNORML	o1	; head ->
-	if \o1 == 0
+	if \o1=0
 	parse	0,22,19
 	endif
-	if \o1 == 1
+	if \o1=1
 	parse	0,19,20
 	endif
-	if \o1 == 2
+	if \o1=2
 	parse	0,15,21
 	endif
 	.endm
 
 .macro	OCTNORMR	o1	; head <-
-	if \o1 == 0
+	if \o1=0
 	parse	-44,26,16
 	endif
-	if \o1 == 1
+	if \o1=1
 	parse	-44,25,17
 	endif
-	if \o1 == 2
+	if \o1=2
 	parse	-36,25,18
 	endif
 	.endm
 
 .macro	OCTATAR	o1		; head ->
-	if \o1 == 0
+	if \o1=0
 	parse	-44,16,22
 	endif
-	if \o1 == 1
+	if \o1=1
 	parse	-34,27,23
 	endif
-	if \o1 == 2
+	if \o1=2
 	parse	-29,26,24
 	endif
-	if \o1 == 3
+	if \o1=3
 	parse	-67,25,25
 	endif
-	if \o1 == 4
+	if \o1=4
 	parse	-57,15,26
 	endif
-	if \o1 == 5
+	if \o1=5
 	parse	-53,15,30
 	endif
 	.endm
 
 .macro	OCTATAL	o1		; head <-
-	if \o1 == 0
+	if \o1=0
 	parse	0,22,31
 	endif
-	if \o1 == 1
+	if \o1=1
 	parse	0,26,32
 	endif
-	if \o1 == 2
+	if \o1=2
 	parse	-4,28,33
 	endif
-	if \o1 == 3
+	if \o1=3
 	parse	-4,15,34
 	endif
-	if \o1 == 4
+	if \o1=4
 	parse	0,15,35
 	endif
-	if \o1 == 5
+	if \o1=5
 	parse	0,15,36
 	endif
 	.endm
