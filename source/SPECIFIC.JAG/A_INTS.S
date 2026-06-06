@@ -156,13 +156,13 @@ star_hash:
 	move.b	#1,d0
 	move.w	d0,INT1
 	move.w	d0,INT2			; reset the proper interrupt vectors
-	lea	2+4*(8+7)(sp),sp
+	lea	2+(4*(8+7))(sp),sp
 	move.l	#restart_program,2(sp)	; quit back to start
 	rte
 clear_that_eeprom:	
 	sf	allow_eeprom_reset
 	jsr	restore_eeprom
-;	jsr	write_hi_score_to_eprom
+	jsr	write_hi_score_to_eprom
 	rts
 sound_flip:
 	move.l	joyedge1,d0						;see if 0 on pad 1 or pressed

@@ -103,19 +103,19 @@ convert_text_to_sprites:
 draw_text:	
 	WAIT_GPU
 	move.l  a0,a3
-	lea     sprite_params,a0
+	lea	sprite_params,a0
 	ext.l   d0              
 	move.l  d0,(a0)+
 	move.l  a3,(a0)+
-	lea     intro_fst_pointer(a4),a1
+	lea	intro_fst_pointer(a4),a1
 	move.l  a1,(a0)+
 	move.l  current_list_pointer(a4),(a0)+
 
-	lea     fasta_gpu_sprite_draw_prog,a0
-	lea     fastb_gpu_sprite_draw,a1
+	lea	fasta_gpu_sprite_draw_prog,a0
+	lea	fastb_gpu_sprite_draw,a1
 	move.l  #fastc_gpu_sprite_drawe,d0
 	sub.l	#fastb_gpu_sprite_draw,d0 
-	bsr     fast_copy_bytes
+	bsr	fast_copy_bytes
 
 	move.l  #fastb_gpu_sprite_draw,gpu_routine
 	rts

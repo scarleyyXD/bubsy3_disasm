@@ -904,7 +904,7 @@ menu_centre_text:
 	move.l	(sp)+,a6
 	rts
 
-RESET_Y_POS_NTSC	equ	(16*(8-4)*(8+7)*(8+4)+30-16)	;($10*8-4*8+7*8+4+30-16)
+RESET_Y_POS_NTSC	equ	(($10*8)-(4*8)+(7*8)+4+30-16)	;($10*8-4*8+7*8+4+30-16)
 RESET_Y_POS_PAL		equ	RESET_Y_POS_NTSC+32
 	
 DRAWRESETSPRITE:

@@ -172,10 +172,10 @@ BUBCTRL:
 
 	move.w	#(320/2),d6									;center bubsy on edit stage
 	
-;	if	!EDITME
-;	cmp.b	#EDITSTATE,BUBSTATE
-;	beq.s	.LA0
-;	endif
+	if	EDITME
+	cmp.b	#EDITSTATE,BUBSTATE
+	beq.s	.LA0
+	endif
 
 	move.w	BUBVX,d0
 	bmi.s	.LA00
@@ -304,10 +304,10 @@ BUBCTRL:
 	and.b	BUBSYFLAGS,d0							;see if bubsy hit a wall don't even bother
 	bne.s	.NOSMACK
 	
-;	if	!EDITME
-;	cmp.b	#EDITSTATE,BUBSTATE
-;	beq.s	.NOSMACK
-;	endif
+	if	EDITME
+	cmp.b	#EDITSTATE,BUBSTATE
+	beq.s	.NOSMACK
+	endif
 	
 	cmp.b	#WARP2STATE,BUBSTATE
 	beq.s	.NOSMACK
@@ -1502,10 +1502,10 @@ STARTJUMP:
 	cmp.b	#ENDSTATE,d6
 	beq.s	.NOJUMP
 
-;	if	!EDITME
-;	cmp.b	#EDITSTATE,d6
-;	beq.s	.NOJUMP
-;	endif
+	if	EDITME
+	cmp.b	#EDITSTATE,d6
+	beq.s	.NOJUMP
+	endif
 
 	cmp.w	#WARP1STATE,d6
 	beq.s	.NOJUMP
@@ -1585,10 +1585,10 @@ JUMPTAB:
 TACKCHECK:
 	move.b	BUBSTATE,d6										;be sure bubsy is alive so we can kill him
 	
-;	if	!EDITME
-;	cmp.b	#EDITSTATE,d6
-;	beq	.NOTACK
-;	endif
+	if	EDITME
+	cmp.b	#EDITSTATE,d6
+	beq	.NOTACK
+	endif
 	
 	cmp.b	#POPSTATE,d6
 	beq	.NOTACK
@@ -2182,7 +2182,7 @@ BUBWARP3:
 BUBREADY:
 	jsr	STICKOBJECTTOPLAYFIELD
 
-	move.L	#IDLEANIMATION,d0
+	move.l	#IDLEANIMATION,d0
 	bsr	STARTANIMATION
 	move.w	STICK,d0
 	and.w	#JOY_ANY+JOY_X+JOY_A+JOY_Y+JOY_B,d0
@@ -2871,7 +2871,7 @@ BUBDEAD:
 
 BUBDEAD1:
 	and.b	#~SPINFLAG,BUBSYFLAGS1							;lose that spinflag
-	rts	;remove later!!
+
 ;	move.b	FADEVAL,d0								;see if it is totally faded
 ;	and.b	#$f0,d0
 ;	beq.s	.B10
@@ -2887,7 +2887,7 @@ BUBDEAD1:
 	move.b	#2,d1
 	asr.b	#1,d1
 	
-; SETNOLIVES	equ	*
+SETNOLIVES	equ	*
 	bcs.s	.bypass	 ;effective noop
 	sbcd	d1,d0
 	move.b	d0,LIVES

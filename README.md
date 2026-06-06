@@ -11,7 +11,7 @@ Known issues with the source currently:
 * Title screen, credits, and hi-score menu don't display
 * ~~Level scroll routines are currently messed up~~
 * ~~Sound effects are not enabled by default (see EEPROM issue)~~
-* ~~Not all entities are scripted/mapped correctly~~
+* Not all entities are scripted/mapped correctly
 
 If you'd like to contribute, shoot up a PR (pull request) and I will accept any fixes when I can.
 

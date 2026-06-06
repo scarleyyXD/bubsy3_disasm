@@ -946,7 +946,8 @@ get_min_max_coard:
 ; d1 - y offset
 ; a0 - list
 
-write_out_quad:	neg.w	d0
+write_out_quad:
+	neg.w	d0
 	neg.w	d1
 	move.w	d0,(a0)+
 	move.w	d1,(a0)+

@@ -1,10 +1,33 @@
-;	include	"c:\\bin\\blit.inc"
 	include	"jaguar.inc"
 
 	include	"freddy/equates.s"
 	include	"freddy/macros.s"
 	include	"freddy/variable.s"
 	include	"freddy/68000.s"
+
+SCREEN_WIDTH	equ	324
+PAL		equ	0
+NTSC	equ	1
+
+	.68000
+	.data
+
+sprite_x		equ	0
+sprite_y		equ	2
+sprite_z		equ	4
+sprite_number	equ	6
+sprite_group	equ	8
+sprite_e		equ	10
+
+jsprite_data			equ	0	; graphic data
+jsprite_paramsixel_width		equ	4	; width in pixels
+jsprite_height			equ	6	; height in pixels
+jsprite_bitsperpixel	equ	8	; bits per pixel
+jsprite_flaos			equ	9	; flags
+jsprite_yoffset			equ	10	; blank pixels at top
+jsprite_paramsalindex		equ	12	; palette index
+jsprite_paramshrase_width	equ	14
+jsprite_e				equ	16
 
 	extern	fasta_gpu_sprite_draw_prog
 	extern	fastb_gpu_sprite_draw
@@ -26,54 +49,6 @@
 	extern	buildc_wibbly_text_gpue
 	extern	wibbleparams
 	extern	starparams
-
-SCREEN_WIDTH	equ	324
-PAL	equ	0
-NTSC	equ	1
-
-	.68000
-	.data
-
-	sprite_x		equ	0
-	sprite_y		equ	2
-	sprite_z		equ	4
-	sprite_number	equ	6
-	sprite_group	equ	8
-	sprite_e		equ	10
-
-	jsprite_data			equ	0	; graphic data
-	jsprite_paramsixel_width		equ	4	; width in pixels
-	jsprite_height			equ	6	; height in pixels
-	jsprite_bitsperpixel	equ	8	; bits per pixel
-	jsprite_flaos			equ	9	; flags
-	jsprite_yoffset			equ	10	; blank pixels at top
-	jsprite_paramsalindex		equ	12	; palette index
-	jsprite_paramshrase_width	equ	14
-
-	jsprite_e				equ	16
-
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
 
 .macro	GABS	reggie
 	cmpq	#0,\reggie
@@ -202,11 +177,11 @@ NTSC	equ	1
 	.endm
 
 .macro	START_GPU
-	move.l	#$1,G_CTRL-BASE(a5)
+	move.l	#1,G_CTRL-BASE(a5)
 	.endm
 
 .macro	STOP_GPU
-	move.l	#$0,G_CTRL-BASE(a5)
+	move.l	#0,G_CTRL-BASE(a5)
 	.endm
 
 	.gpu
@@ -237,6 +212,7 @@ IMMID	regequ	r18
 
 ; R14/R15 CAN BE USED ANYWHERE I FEEL LIKE IT 
 	.68000
+	.data
 
 ;---------------------------------------------------
 ; THIS BIT OF CODE INITIALIZES THE GPU FOR MY STUFF
@@ -486,6 +462,7 @@ build_map_gpue:
 ;---------------------------------------------------
 
 	.68000
+	.data
 fasta_gpu_sprite_draw_prog:
 	.gpu
 	.org	G_RAM+$200
@@ -619,6 +596,7 @@ fastc_gpu_sprite_drawe:
 ; this routine uses the gpu to run length decode images stored in public ram
 
 	.68000
+	.data
 gpu_rld_prog:
 	.gpu
 	.org	G_RAM+$200
@@ -679,6 +657,7 @@ gpu_rlde:
 ;---------------------------------------------------
 
 	.68000
+	.data
 builda_circle_prog:
 	.gpu
 	.org	G_RAM+$200
@@ -761,6 +740,7 @@ buildc_circle_gpue:
 ;---------------------------------------------------
 
 	.68000
+	.data
 builda_star_prog:
 	.gpu
 	.org	G_RAM+$200
@@ -1067,6 +1047,7 @@ buildc_star_gpue:
 ;---------------------------------------------------
 
 	.68000
+	.data
 builda_wibbly_text_prog:
 	.gpu
 	.org	G_RAM+$200
@@ -1126,7 +1107,7 @@ buildb_wibbly_text_gpu:
 	add	RD4,RA5
 	storew	RA5,(RA1)
 	addq	#2,RA1
-	load    	(RA0),RA5
+	load    (RA0),RA5
 	store	RA5,(RA1)
 	addq	#4,RA0
 	addq	#4,RA1
@@ -1144,6 +1125,7 @@ buildc_wibbly_text_gpue:
 
 ;---------------------------------------------------
 	.68000
+	.data
 	if	STRIP=FALSE
 color_int_prog:
 	.gpu
@@ -1184,6 +1166,7 @@ color_inte:
 
 ;---------------------------------------------------
 	.68000
+	.data
 gpu_interface_prog:
 	.gpu
 	.org	G_RAM+$f00
@@ -1195,11 +1178,11 @@ gstack:
 rad_params:
 rld_params:
 sprite_params:
-map_params:	dcb.l	11,0
+map_params:		dcb.l	11,0
 rld_return_bytes:
 sprite_return_obytes:
-gmap_return_obytes: 	dc.l	0
-gpu_routine:		dc.l	0
+gmap_return_obytes: dc.l	0
+gpu_routine:	dc.l	0
 
 gpu_done:
 	moveq	#0,r0
@@ -1218,12 +1201,4 @@ gpu_hold:
 	.long
 gpu_interfacee:
 	.68000
-
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
-***************************************
+	.data

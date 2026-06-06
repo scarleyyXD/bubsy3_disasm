@@ -3,8 +3,7 @@
 		.text
 
 		include	"jaguar.inc"		;ok
-	;	include	"c:/jaguar/include/blit.inc"		;don't need this!
-		
+
 		include	"specific.jag/jaguar.s"				;ok
 		include	"specific.jag/vidinit.s"			;ok
 		
@@ -68,7 +67,7 @@ new_palette:	incbin	"specific.jag/bubtask.cpl"
 		include	"objhndlr.s"					;ok
 		include	"bubbop.s"					;ok
 
-		include	"worldai.s"					;ok - I think ;clear out for now, causes errors
+		include	"worldai.s"					;ok - I think
 		include	"enemymap.s"
 
 		include	"freddy/main.s"
@@ -95,10 +94,8 @@ LOAD_BUBBLE_GRAPHICS_ADDR:	dc.l	view_bubble_sprites
 LOAD_ARROW_GRAPHICS_ADDR:	dc.l	view_arrow_sprites
 LOAD_PAWSED_GRAPHICS_ADDR:	dc.l	view_paused_sprites
 							dc.l	0
-							
-		.dphrase
 
-		include	"bubram.s"					;of course this will be altered ;what?
+		include	"bubram.s"					;of course this will be altered
 		even
 
 clock:				ds.l	1

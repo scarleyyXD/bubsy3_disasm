@@ -20,7 +20,7 @@ loc_2991E:
 	move.l	(a0)+,(a1)+
 	dbf	d1,loc_2991E
 
-	movea.l	#(D_RAM+$800),a0
+	movea.l	#D_RAM+$800,a0
 	jsr	sub_2997C
 	jsr	sub_2997C
 	jsr	sub_2997C
@@ -111,7 +111,7 @@ NT_VBL:
 	lea	$210(a3),a3
 	lea	dword_2AF90(pc),a1
 	lea	word_2A7D6(pc),a0
-	movea.l	#(D_RAM+$800),a4
+	movea.l	#D_RAM+$800,a4
 	moveq	#3,d7
 	lea	dword_2B5DE(pc),a2
 	pea	(a2)
@@ -197,12 +197,12 @@ sub_29B58:
 	tst.b	$27(a2)
 	beq.s	loc_29B7C
 	moveq	#1,d6
-	movea.l	#(D_RAM+$880),a4
+	movea.l	#D_RAM+$880,a4
 	lea	$30(a2),a2
 	bra.s	loc_29B88
 loc_29B7C:
 	moveq	#5,d6
-	movea.l	#(D_RAM+$800),a4
+	movea.l	#D_RAM+$800,a4
 	lea	$28(a2),a2
 loc_29B88:
 	pea	(a4)
@@ -353,7 +353,7 @@ FADEDOWN:
 
 START_MOD:
 	move.l	a4,-(sp)
-	move.l	#0,(D_RAM+$350)
+	move.l	#0,D_RAM+$350
 	jsr	ENABLETIMER
 
 	lea	dword_2B5DE(pc),a4
@@ -369,7 +369,7 @@ STOP_MOD:
 	lea	dword_2B5DE(pc),a4
 	sf	byte_2B605-dword_2B5DE(a4)
 	lea	$28(a4),a3
-	movea.l	#(D_RAM+$800),a4
+	movea.l	#D_RAM+$800,a4
 	moveq	#3,d7
 
 PLAYFX:
@@ -379,7 +379,7 @@ PLAYFX:
 	lea	32(a4),a4
 	dbf	d7,PLAYFX
 
-	move.l	#-1,(D_RAM+$350)
+	move.l	#-1,D_RAM+$350
 	movem.l	(sp)+,d7/a3-a4
 	rts
 
@@ -401,7 +401,7 @@ DISABLE_FX:
 loc_29DAE:
 	moveq	#1,d7
 loc_29DB0:
-	movea.l	#(D_RAM+$800),a6
+	movea.l	#D_RAM+$800,a6
 	lea	$A0(a6),a6
 loc_29DBA:
 	move.l  #-4,(a6)
@@ -492,9 +492,9 @@ loc_29EA6:
 	add.l	a2,d0
 	move.l	d0,8(a5)
 	clr.l	12(a5)
-	adda.w	#$14,a0
+	adda.w	#20,a0
 	move.b	-2(a1),0(a5)	; set song length
-	moveq	#$7F,d0
+	moveq	#127,d0
 	moveq	#0,d1
 
 loc_29ED6:
@@ -513,14 +513,12 @@ loc_29EDE:
 loc_29EFA:
 	clr.l	(a6)+
 	dbf	d0,loc_29EFA
-
 	moveq	#$33,d0
 	lea	$210(a5),a6
 
 loc_29F06:
 	clr.l	(a6)+
 	dbf	d0,loc_29F06
-
 	lea	$244(a5),a6
 	move.w  #8,$20(a6)
 	lea	$278(a5),a6
@@ -538,7 +536,6 @@ loc_29F34:
 	move.w  #2,(a5)+
 	clr.l	(a5)+
 	dbf	d0,loc_29F34
-
 	lea	dword_29FD8(pc),a5
 	movem.l	d0-d7/a0-a4,(a5)
 	rts
@@ -710,7 +707,7 @@ loc_2A0F6:
 	rts
 sub_2A134:
 	move.l	(a0)+,d0
-	move.l	d0,0(a1)
+	move.l	d0,NOTE(a1)
 	move.w	d0,d1
 	swap	d0
 	move.w  d0,d2
@@ -722,11 +719,11 @@ sub_2A134:
 	subq.w	#1,d1
 	lsr.w	#4,d1
 	andi.w	#$1F0,d1
-	st	$33(a1)
+	st	51(a1)
 	lsr.w	#4,d1
-	move.b	d1,$32(a1)
+	move.b	d1,SAMP_NUMBER(a1)
 	lsl.w	#4,d1
-	lea	6(a1),a3
+	lea	SAMP_START(a1),a3
 	lea	$1C(a5),a4
 	adda.w	d1,a4
 	move.l	(a4)+,(a3)+
@@ -734,12 +731,12 @@ sub_2A134:
 	move.l	(a4)+,(a3)+
 	move.w	(a4)+,(a3)+
 	move.w	(a4),2(a3)
-	movea.l	$C(a1),a3
+	movea.l	SAMP_START2(a1),a3
 	move.l	a3,$2A(a1)
 loc_2A180:
 	andi.w	#$FFF,d0
 	beq.w	locret_2A28C
-	move.b	2(a1),d1
+	move.b	EFFECT(a1),d1
 	andi.w	#$F,d1
 	cmp.b	#3,d1		; effect == 3?
 	beq.w	loc_2A242
@@ -748,32 +745,32 @@ loc_2A180:
 	cmp.b	#9,d1		; effect == 9?
 	bne.s	loc_2A1D0
 	moveq	#0,d1	; restart the sample??
-	move.b	3(a1),d1
+	move.b	EFFECT_PARAM(a1),d1
 	beq.s	loc_2A1B2
-	move.b	d1,$23(a1)
+	move.b	d1,SAMP_OFFSET(a1)
 loc_2A1B2:
-	move.b	$23(a1),d1
+	move.b	SAMP_OFFSET(a1),d1
 	lsl.w	#7,d1
-	cmp.w	10(a1),d1
+	cmp.w	SAMP_LENGTH(a1),d1
 	bge.s	loc_2A1CA
-	sub.w	d1,10(a1)
+	sub.w	d1,SAMP_LENGTH(a1)
 	add.w	d1,d1
-	add.l	d1,6(a1)
+	add.l	d1,SAMP_START(a1)
 	bra.s	loc_2A1D0
 loc_2A1CA:
-	move.w  #1,10(a1)
+	move.w  #1,SAMP_LENGTH(a1)
 loc_2A1D0:
 	move.l	d0,d1
 	swap	d1
-	andi.w  #$FF0,d1
-	cmp.w   #$E50,d1
+	andi.w  #4080,d1
+	cmp.w   #3664,d1
 	bne.s   loc_2A1EC
 	moveq   #0,d2
-	move.b  3(a1),d2
+	move.b  EFFECT_PARAM(a1),d2
 	andi.w  #$F,d2
-	move.w  d2,$12(a1)
+	move.w  d2,FINETUNE(a1)
 loc_2A1EC:
-	move.w	$12(a1),d2
+	move.w	FINETUNE(a1),d2
 	beq.s	loc_2A20C
 	lea	dword_2AB06,a3
 	moveq	#$24,d2
@@ -782,27 +779,27 @@ loc_2A1F8:
 	bcc.s	loc_2A200
 	dbf	d2,loc_2A1F8
 loc_2A200:
-	move.w  $12(a1),d2
+	move.w  FINETUNE(a1),d2
 	mulu.w  #$48,d2
 	move.w  -2(a3,d2.w),d0
 loc_2A20C:
-	move.w	d0,$14(a1)
+	move.w	d0,LAST_PERIOD(a1)
 	cmp.w	#$ED0,d1
 	beq.w	locret_2A28C
-	btst	#2,$22(a1)
+	btst	#2,NUM_34(a1)
 	bne.s	loc_2A224
-	clr.b	$25(a1)
+	clr.b	VIBRATO_TICK(a1)
 loc_2A224:
-	btst	#6,$22(a1)
+	btst	#6,NUM_34(a1)
 	bne.s	loc_2A230
-	clr.b	$25(a1)
+	clr.b	VIBRATO_TICK(a1)
 loc_2A230:
-	move.l	6(a1),0(a2)
-	move.w	$A(a1),4(a2)
+	move.l	SAMP_START(a1),0(a2)
+	move.w	SAMP_LENGTH(a1),4(a2)
 	asl	4(a2)
 	rts
 loc_2A242:
-	move.w  $12(a1),d1
+	move.w  FINETUNE(a1),d1
 	mulu.w  #$48,d1
 	lea	dword_2AB06,a3
 	adda.l  d1,a3
@@ -815,7 +812,7 @@ loc_2A252:
 	bcs.s   loc_2A252
 	moveq   #$46,d1
 loc_2A262:
-	move.w	$12(a1),d0
+	move.w	FINETUNE(a1),d0
 	andi.b	#8,d0
 	beq.s	loc_2A272
 	tst.w	d1
@@ -823,16 +820,16 @@ loc_2A262:
 	subq.w	#2,d1
 loc_2A272:
 	move.w	(a3,d1.w),d0
-	move.w	d0,$1C(a1)
+	move.w	d0,PORTA_TARGET(a1)
 	clr.b	$1E(a1)
-	cmp.w	$14(a1),d0
+	cmp.w	LAST_PERIOD(a1),d0
 	beq.s	loc_2A28E
 	bgt.s	locret_2A28C
-	move.b  #1,$1E(a1)
+	move.b	#1,$1E(a1)
 locret_2A28C:
 	rts
 loc_2A28E:
-	clr.w   $1C(a1)
+	clr.w	PORTA_TARGET(a1)
 	rts
 
 do_effects:
@@ -841,10 +838,10 @@ sub_2A294:
 	movem.l a0-a1,-(sp)
 	bsr.w	sub_2A77C
 	movem.l (sp)+,a0-a1
-	lea	$14(a0),a2
+	lea	LAST_PERIOD(a0),a2
 	move.l	(a2)+,(a2)
 	moveq	#0,d0
-	move.w	2(a0),d0
+	move.w	EFFECT(a0),d0
 	andi.w	#$FFF,d0
 	beq.s	loc_2A2CE
 	move.l	d0,d1
@@ -858,8 +855,8 @@ sub_2A294:
 	jsr	(a1)
 loc_2A2CE:
 	move.w	$20E(a5),d0
-	mulu.w	$1A(a0),d0
-	move.w	d0,$1A(a0)
+	mulu.w	VOLUME_EX(a0),d0
+	move.w	d0,VOLUME_EX(a0)
 	movea.l (sp)+,a1
 	rts
 
@@ -916,15 +913,15 @@ loc_2A33C:
 	andi.b	#15,d0
 	bra.s	loc_2A34A
 loc_2A344:
-	move.w	$14(a0),d2
+	move.w	LAST_PERIOD(a0),d2
 	bra.s	loc_2A370
 loc_2A34A:
 	add.w   d0,d0
-	move.w  $12(a0),d1
+	move.w  FINETUNE(a0),d1
 	mulu.w  #$48,d1
 	lea	dword_2AB06,a1
 	adda.l	d1,a1
-	move.w	$14(a0),d1
+	move.w	LAST_PERIOD(a0),d1
 	moveq	#$24,d7
 loc_2A360:
 	move.w	(a1,d0.w),d2
@@ -934,61 +931,61 @@ loc_2A360:
 	dbf	d7,loc_2A360
 	rts
 loc_2A370:
-	move.w  d2,$18(a0)
+	move.w  d2,PERIOD(a0)
 	rts
 
 loc_2A376:		; effect 1 - pitch up!
-	sub.w   d1,$14(a0)
-	cmpi.w  #113,$14(a0)
+	sub.w   d1,LAST_PERIOD(a0)
+	cmpi.w  #113,LAST_PERIOD(a0)
 	bge.s   loc_2A388
-	move.w  #113,$14(a0)
+	move.w  #113,LAST_PERIOD(a0)
 loc_2A388:
-	move.w  $14(a0),d0
-	move.w  d0,$18(a0)
+	move.w  LAST_PERIOD(a0),d0
+	move.w  d0,PERIOD(a0)
 	rts
 
 loc_2A392:		; effect 2 - pitch down!
-	add.w   d1,$14(a0)
-	cmpi.w  #856,$14(a0)
+	add.w   d1,LAST_PERIOD(a0)
+	cmpi.w  #856,LAST_PERIOD(a0)
 	ble.s   loc_2A3A4
-	move.w  #856,$14(a0)
+	move.w  #856,LAST_PERIOD(a0)
 loc_2A3A4:
-	move.w  $14(a0),d0
-	move.w  d0,$18(a0)
+	move.w  LAST_PERIOD(a0),d0
+	move.w  d0,PERIOD(a0)
 	rts
 
 loc_2A3AE:		; effect 3 - slide to note
 	tst.w	d1
 	beq.s	sub_2A3BA
-	move.b	d1,$1F(a0)
-	clr.b	3(a0)
+	move.b	d1,PORTA_SPEED(a0)
+	clr.b	EFFECT_PARAM(a0)
 sub_2A3BA:
-	move.w	$1C(a0),d2
+	move.w	PORTA_TARGET(a0),d2
 	bne.s	loc_2A3C2
 	rts
 loc_2A3C2:
 	moveq	#0,d0
-	move.b	$1F(a0),d0
+	move.b	PORTA_SPEED(a0),d0
 	tst.b	$1E(a0)
 	beq.s	loc_2A3E2
-	sub.w	d0,$14(a0)
-	cmp.w	$14(a0),d2
+	sub.w	d0,LAST_PERIOD(a0)
+	cmp.w	LAST_PERIOD(a0),d2
 	blt.s	loc_2A3F4
-	move.w	d2,$14(a0)
-	clr.w	$1C(a0)
+	move.w	d2,LAST_PERIOD(a0)
+	clr.w	PORTA_TARGET(a0)
 	bra.s	loc_2A3F4
 loc_2A3E2:
-	add.w	d0,$14(a0)
-	cmp.w	$14(a0),d2
+	add.w	d0,LAST_PERIOD(a0)
+	cmp.w	LAST_PERIOD(a0),d2
 	bgt.s	loc_2A3F4
-	move.w	d2,$14(a0)
-	clr.w	$1C(a0)
+	move.w	d2,LAST_PERIOD(a0)
+	clr.w	PORTA_TARGET(a0)
 loc_2A3F4:
-	move.w	$14(a0),d0
+	move.w	LAST_PERIOD(a0),d0
 	move.b	$28(a0),d1
 	andi.b	#15,d1
 	beq.s	loc_2A426
-	move.w	$12(a0),d1
+	move.w	FINETUNE(a0),d1
 	mulu.w	#$48,d1
 	lea	dword_2AB06,a1
 	adda.l	d1,a1
@@ -1003,32 +1000,32 @@ loc_2A412:
 loc_2A422:
 	move.w	(a1,d1.w),d0
 loc_2A426:
-	move.w	d0,$18(a0)
+	move.w	d0,PERIOD(a0)
 	rts
 
 loc_2A42C:		; effect 4 - vibrato
 	tst.w	d1
 	beq.s	sub_2A454
-	move.b	$24(a0),d2
+	move.b	VIBRATO_NUM(a0),d2
 	andi.b	#$F,d1
 	beq.s	loc_2A440
 	andi.b	#$F0,d2
 	or.b	d1,d2
 loc_2A440:
-	move.b	3(a0),d1
+	move.b	EFFECT_PARAM(a0),d1
 	andi.b	#$F0,d1
 	beq.s	loc_2A450
 	andi.b	#$F,d2
 	or.w	d1,d2
 loc_2A450:
-	move.b	d2,$24(a0)
+	move.b	d2,VIBRATO_NUM(a0)
 sub_2A454:
 	lea	byte_2AAE6,a1		; load up vibrato table
-	move.b	$25(a0),d0
+	move.b	VIBRATO_TICK(a0),d0
 	lsr.w	#2,d0
 	andi.w	#31,d0
 	moveq	#0,d1
-	move.b	$22(a0),d1
+	move.b	NUM_34(a0),d1
 	andi.b	#3,d1
 	beq.s	loc_2A48E
 	lsl.b	#3,d0
@@ -1037,7 +1034,7 @@ sub_2A454:
 	move.b	#$FF,d1
 	bra.s	loc_2A492
 loc_2A47C:
-	tst.b	$25(a0)
+	tst.b	VIBRATO_TICK(a0)
 	bpl.s	loc_2A48A
 	move.b	#$FF,d1
 	sub.b	d0,d1
@@ -1048,62 +1045,62 @@ loc_2A48A:
 loc_2A48E:
 	move.b	(a1,d0.w),d1
 loc_2A492:
-	move.b	$24(a0),d0
+	move.b	VIBRATO_NUM(a0),d0
 	andi.w	#$F,d0
 	mulu.w	d0,d1
 	lsr.w	#7,d1
-	move.w	$14(a0),d0
-	tst.b	$25(a0)
+	move.w	LAST_PERIOD(a0),d0
+	tst.b	VIBRATO_TICK(a0)
 	bmi.s	loc_2A4AC
 	add.w	d1,d0
 	bra.s	loc_2A4AE
 loc_2A4AC:
 	sub.w	d1,d0
 loc_2A4AE:
-	move.w	d0,$18(a0)
-	move.b	$24(a0),d0
+	move.w	d0,PERIOD(a0)
+	move.b	VIBRATO_NUM(a0),d0
 	lsr.w	#2,d0
 	andi.w	#$3C,d0
-	add.b	d0,$25(a0)
+	add.b	d0,VIBRATO_TICK(a0)
 	rts
 
 loc_2A4C2:		; effect 5 (effects $3 + $A)
 	bsr.w	sub_2A3BA
 	moveq	#0,d1
-	move.b	3(a0),d1
+	move.b	EFFECT_PARAM(a0),d1
 	bsr.w	sub_2A5B0
 	rts
 
 loc_2A4D2:		; effect 6 (effects $4 + $A)
 	bsr.w	sub_2A454
 	moveq	#0,d1
-	move.b	3(a0),d1
+	move.b	EFFECT_PARAM(a0),d1
 	bsr.w	sub_2A5B0
 	rts
 
 loc_2A4E2:		; effect 7 - tremolo (this works??)
 	tst.w	d1
 	beq.s	loc_2A50A
-	move.b	$24(a0),d2
+	move.b	VIBRATO_NUM(a0),d2
 	andi.b	#$F,d1
 	beq.s	loc_2A4F6
 	andi.b	#$F0,d2
 	or.b	d1,d2
 loc_2A4F6:
-	move.b  3(a0),d1
+	move.b  EFFECT_PARAM(a0),d1
 	andi.b  #$F0,d1
 	beq.s   loc_2A506
 	andi.b  #$F,d2
 	or.w    d1,d2
 loc_2A506:
-	move.b  d2,$24(a0)
+	move.b  d2,VIBRATO_NUM(a0)
 loc_2A50A:
 	lea	byte_2AAE6,a1		; load up vibrato table
-	move.b	37(a0),d0
+	move.b	VIBRATO_TICK(a0),d0
 	lsr.w	#2,d0
 	andi.w	#31,d0
 	moveq	#0,d1
-	move.b	$22(a0),d1
+	move.b	NUM_34(a0),d1
 	lsr.b	#4,d1
 	andi.b	#3,d1
 	beq.s	loc_2A546
@@ -1113,7 +1110,7 @@ loc_2A50A:
 	move.b  #255,d1
 	bra.s   loc_2A54A
 loc_2A534:
-	tst.b   37(a0)
+	tst.b   VIBRATO_TICK(a0)
 	bpl.s   loc_2A542
 	move.b  #255,d1
 	sub.b   d0,d1
@@ -1124,12 +1121,12 @@ loc_2A542:
 loc_2A546:
 	move.b  (a1,d0.w),d1
 loc_2A54A:
-	move.b  $24(a0),d0
+	move.b  VIBRATO_NUM(a0),d0
 	andi.w  #15,d0
 	mulu.w  d0,d1
 	lsr.w   #6,d1
-	move.w  $16(a0),d0
-	tst.b   $25(a0)
+	move.w  VOLUME(a0),d0
+	tst.b   VIBRATO_TICK(a0)
 	bmi.s   loc_2A564
 	add.w   d1,d0
 	bra.s   loc_2A566
@@ -1143,11 +1140,11 @@ loc_2A56A:
 	ble.s   loc_2A572
 	moveq   #64,d0
 loc_2A572:
-	move.w  d0,$1A(a0)
-	move.b  $24(a0),d0
+	move.w  d0,VOLUME_EX(a0)
+	move.b  VIBRATO_NUM(a0),d0
 	lsr.w   #2,d0
 	andi.w  #$3C,d0
-	add.b   d0,$25(a0)
+	add.b   d0,VIBRATO_TICK(a0)
 	rts
 
 locret_2A586:	; effect 8 - unused (FT2 pan)
@@ -1156,30 +1153,30 @@ locret_2A586:	; effect 8 - unused (FT2 pan)
 loc_2A588:		; effect 9 - sample offset
 	tst.w	d1
 	beq.s	loc_2A590
-	move.b	d1,$23(a0)
+	move.b	d1,SAMP_OFFSET(a0)
 loc_2A590:
-	move.b	$23(a0),d1
+	move.b	SAMP_OFFSET(a0),d1
 	lsl.w	#7,d1
-	cmp.w	$A(a0),d1
+	cmp.w	SAMP_LENGTH(a0),d1
 	bge.s	loc_2A5A8
-	sub.w	d0,$A(a0)
+	sub.w	d0,SAMP_LENGTH(a0)
 	add.w	d0,d0
-	add.l	d0,6(a0)
+	add.l	d0,SAMP_START(a0)
 	rts
 loc_2A5A8:
-	move.w	#1,$A(a0)
+	move.w	#1,SAMP_LENGTH(a0)
 	rts
 
 sub_2A5B0:		; effect $A - volume slide
-	move.w	$16(a0),d3
+	move.w	VOLUME(a0),d3
 	move.w	d1,d2
 	lsr.w	#4,d1
 	andi.w	#$F,d1
 	beq.s	loc_2A5CA
 	add.w	d1,d3
-	cmp.w	#64,d3
+	cmp.w	#64,d3	; volume > 64 ??
 	ble.s	loc_2A5D4
-	moveq	#64,d3
+	moveq	#64,d3	; truncate to 64
 	bra.s	loc_2A5D4
 loc_2A5CA:
 	andi.w	#$F,d2
@@ -1187,8 +1184,8 @@ loc_2A5CA:
 	bpl.s	loc_2A5D4
 	moveq	#0,d3
 loc_2A5D4:
-	move.w	d3,$16(a0)
-	move.w	d3,$1A(a0)
+	move.w	d3,VOLUME(a0)
+	move.w	d3,VOLUME_EX(a0)
 	rts
 
 loc_2A5DE:		; effect $B - pattern jump
@@ -1203,8 +1200,8 @@ loc_2A5EE:		; effect $C - set volume
 	ble.s	loc_2A5F6
 	moveq	#64,d1	; truncate to 64
 loc_2A5F6:
-	move.w	d1,$16(a0)
-	move.w	d1,$1A(a0)
+	move.w	d1,VOLUME(a0)
+	move.w	d1,VOLUME_EX(a0)
 	rts
 
 loc_2A600:		; effect $D - break pattern
@@ -1272,12 +1269,12 @@ loc_2A672:		; effect 3 - portamento control
 	rts
 
 loc_2A67E:		; effect 4 - vibrato control
-	andi.b	#$F0,$22(a0)
-	or.b	d1,$22(a0)
+	andi.b	#$F0,NUM_34(a0)
+	or.b	d1,NUM_34(a0)
 	rts
 
 loc_2A68A:		; effect 5 - set finetune
-	move.b	d1,$12(a0)
+	move.b	d1,FINETUNE(a0)
 	rts
 
 loc_2A690:		; effect 6 - pattern loop
@@ -1285,30 +1282,30 @@ loc_2A690:		; effect 6 - pattern loop
 	bne.s	locret_2A6C6
 	tst.w	d1
 	beq.s	loc_2A6BA
-	tst.b	$26(a0)
+	tst.b	REPEAT_NUMBER(a0)
 	beq.s	loc_2A6B4
-	subq.b	#1,$26(a0)
+	subq.b	#1,REPEAT_NUMBER(a0)
 	beq.s	locret_2A6C6
 loc_2A6A6:
-	move.b	$27(a0),d0
+	move.b	REPEAT_PATTERN(a0),d0
 	move.b	d0,6(a5)
 	st	5(a5)
 	rts
 loc_2A6B4:
-	move.b	d1,$26(a0)
+	move.b	d1,REPEAT_NUMBER(a0)
 	bra.s	loc_2A6A6
 loc_2A6BA:
-	move.l	$C(a5),d1
+	move.l	12(a5),d1
 	lsr.w	#4,d1
 	subq.b	#1,d1
-	move.b	d1,$27(a0)
+	move.b	d1,REPEAT_PATTERN(a0)
 locret_2A6C6:
 	rts
 
 loc_2A6C8:		; effect 7 - tremolo control
 	lsl.b	#4,d1
-	andi.b	#$F,$22(a0)
-	or.b	d1,$22(a0)
+	andi.b	#$F,NUM_34(a0)
+	or.b	d1,NUM_34(a0)
 	rts
 
 locret_2A6D6:	; effect 8 - unused
@@ -1317,11 +1314,10 @@ locret_2A6D6:	; effect 8 - unused
 loc_2A6D8:		; effect 9 - retrigger note
 	tst.w	d1
 	beq.s	locret_2A714
-
 	moveq	#0,d2
 	move.b	1(a5),d2
 	bne.s	loc_2A6F4
-	move.w	0(a0),d2
+	move.w	NOTE(a0),d2
 	andi.w	#$FFF,d2
 	bne.s	locret_2A714
 	moveq	#0,d2
@@ -1334,8 +1330,8 @@ loc_2A6F4:
 sub_2A6FC:
 	move.w	$20(a0),d1
 	lea	word_2A7D6(pc),a6
-	move.l	6(a0),0(a6,d1.w)
-	move.w	10(a0),4(a6,d1.w)
+	move.l	SAMP_START(a0),0(a6,d1.w)
+	move.w	SAMP_LENGTH(a0),4(a6,d1.w)
 	asl	4(a6,d1.w)
 locret_2A714:
 	rts
@@ -1343,7 +1339,6 @@ locret_2A714:
 loc_2A716:		; effect $A - fine vol. slide up
 	tst.b	1(a5)		; is current tick 0?
 	bne.s	locret_2A722
-
 	lsl.b	#4,d1
 	bsr.w	sub_2A5B0
 locret_2A722:
@@ -1352,26 +1347,23 @@ locret_2A722:
 loc_2A724:		; effect $B - fine vol. slide down
 	tst.b   1(a5)		; is current tick 0?
 	bne.s   locret_2A72E
-
 	bsr.w   sub_2A5B0
 locret_2A72E:
 	rts
 
 loc_2A730:		; effect $C - note cut at X tick
 	cmp.b	1(a5),d1	; is current tick at intended value?
-	bne.s	locret_2A73E
-
-	clr.w	$16(a0)
-	clr.w	$1A(a0)
+	bne.s	locret_2A73E	; if not, don't do it yet
+	clr.w	VOLUME(a0)
+	clr.w	VOLUME_EX(a0)
 locret_2A73E:
 	rts
 
 loc_2A740:		; effect $D - note delay until X tick
 	cmp.b	1(a5),d1	; is current tick at intended value?
 	bne.s	locret_2A750
-	tst.w	0(a0)
+	tst.w	NOTE(a0)	; is there a note?
 	beq.s	locret_2A750
-
 	bsr.w	sub_2A6FC
 locret_2A750:
 	rts
@@ -1381,7 +1373,6 @@ loc_2A752:		; effect $E - pattern delay
 	bne.s	locret_2A764
 	tst.b	$791(a5)
 	bne.s	locret_2A764
-
 	addq.b	#1,d1
 	move.b	d1,dword_2AF90
 locret_2A764:
@@ -1390,7 +1381,6 @@ locret_2A764:
 loc_2A766:		; effect $F - invert loop
 	tst.b	1(a5)		; is current tick 0?
 	bne.s	locret_2A7C4
-
 	lsl.b	#4,d1
 	andi.b	#$F,$28(a0)
 	or.b	d1,$28(a0)
@@ -1407,7 +1397,7 @@ sub_2A77C:
 	btst	#7,$29(a0)
 	beq.s	locret_2A7C4
 	clr.b	$29(a0)
-	move.l	12(a0),d0
+	move.l	SAMP_START2(a0),d0
 	moveq	#0,d1
 	move.w	16(a0),d1
 	add.l	d1,d0
@@ -1416,7 +1406,7 @@ sub_2A77C:
 	addq.l	#1,a1
 	cmpa.l	d0,a1
 	bcs.s	loc_2A7BA
-	movea.l	12(a0),a1
+	movea.l	SAMP_START2(a0),a1
 loc_2A7BA:
 	move.l	a1,$2A(a0)
 	moveq	#-1,d0
@@ -1446,7 +1436,6 @@ word_2A7FE:	dc.l 0	;; pattern address ($35FC0+addr)
 word_2A802:	dc.l 0	;; current row
 off_2A806:	dc.l 0	;; MOD address location
 
-;TODO!!! (sample offset/data??)
 off_2A80A:	dc.l 0	;; pattern data begin address
 off_2A80E:	dc.l 0	;; pattern data address
 

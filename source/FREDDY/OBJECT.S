@@ -20,30 +20,30 @@ RMW     equ	2
 TRANS   equ	4
 RELEASE equ	8
 
-.macro	OBJBITS	size,o1,o2,o3
+.macro	OBJBITS	o0,o1,o2,o3
 	moveq   #0,d0
-	if "\{size}"="b"
-		move.b	\o1(a0),d0
+	if "\{o0}"="b"
+	move.b	\o1(a0),d0
 	endif
-	if "\{size}"="w"
-		move.w	\o1(a0),d0
+	if "\{o0}"="w"
+	move.w	\o1(a0),d0
 	endif
-	if "\{size}"="l"
-		move.l	\o1(a0),d0
+	if "\{o0}"="l"
+	move.l	\o1(a0),d0
 	endif
 	move.l  d0,d1
 	move.l  a1,-(sp)
 
-	if \3 = 2
+	if \o3 = 2
 	addq.l  #8,a1
 	endif
-	if \3 = 3
+	if \o3 = 3
 	addq.l  #8,a1
 	addq.l  #8,a1
 	endif
 
-	if \2 < 32
-	moveq   #\2,d2
+	if \o2 < 32
+	moveq   #\o2,d2
 	lsl.l   d2,d0
 	or.l    d0,4(a1)
 	sub.w   #32,d2
@@ -52,8 +52,8 @@ RELEASE equ	8
 	or.l    d1,0(a1)
 	endif
 
-	if \2 >= 31
-	moveq   #\2-32,d2
+	if \o2 >= 31
+	moveq   #\o2-32,d2
 	lsl.l   d2,d0
 	or.l    d0,(a1)
 	endif
@@ -62,35 +62,35 @@ RELEASE equ	8
 	.endm
 
 ; BITMAP OBJECT STRUCTURE
-obj_type			equ	0
-obj_ypos			equ	2
-obj_height			equ	4
-obj_link			equ	6
-obj_data			equ	10
-obj_xpos			equ	14
-obj_depth			equ	16
-obj_pitch			equ	18
-obj_dwidth			equ	20
-obj_iwidth			equ	22
-obj_index			equ	24
-obj_flags			equ	26
-obj_firstpix		equ	28
+obj_type			equ $00
+obj_ypos			equ $02
+obj_height			equ $04
+obj_link			equ $06
+obj_data			equ $0A
+obj_xpos			equ $0E
+obj_depth			equ $10
+obj_pitch			equ $12
+obj_dwidth			equ $14
+obj_iwidth			equ $16
+obj_index			equ $18
+obj_flags			equ $1A
+obj_firstpix		equ $1C
 
 ;-SCALED BITMAP OBJECT
-obj_hscale			equ	30
-obj_vscale			equ	32
-obj_remainder		equ	34
+obj_hscale			equ $1E
+obj_vscale			equ $20
+obj_remainder		equ $22
 	
 ;-BRANCH OBJECT
-obj_cc				equ	36
-
+obj_cc				equ $24
+		
 ;-DATA USED FOR STOP AND GPU
-obj_gpustop_data	equ	40
-object_e			equ	48
+obj_gpustop_data	equ $26
+object_e			equ $2E
 
 .macro	STACKOBJ
 	lea	-object_e(sp),sp
-	move.l  sp,a0
+	move.l	sp,a0
 	.endm
 
 .macro	UNSTACKOBJ
@@ -98,20 +98,20 @@ object_e			equ	48
 	.endm
 
 clip_bitmap_object: 
-	move.w  obj_ypos(a0),d0
-	bpl.s   .pos_y
-	neg.w   d0
-	mulu    obj_dwidth(a0),d0
-	lsl.l   #3,d0
-	add.l   d0,obj_data(a0)
-	clr.w   obj_ypos(a0)
+	move.w	obj_ypos(a0),d0
+	bpl.s	.pos_y
+	neg.w	d0
+	mulu	obj_dwidth(a0),d0
+	lsl.l	#3,d0
+	add.l	d0,obj_data(a0)
+	clr.w	obj_ypos(a0)
 .pos_y:
 	rts     
 
 make_object:
-	move.w  obj_type(a0),d0
-	lsl.w   #2,d0
-	jmp     obj_jmp(pc,d0)
+	move.w	obj_type(a0),d0
+	lsl.w	#2,d0
+	jmp	obj_jmp(pc,d0)
 
 obj_jmp:
 	jmp	bitmap_type(pc)

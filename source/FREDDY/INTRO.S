@@ -348,9 +348,9 @@ dest_star_table		equ -1000
 	lea	dest_star_table(a6),a1
 	move.w	current_star_angle(a4),d0
 	move.w	d0,d1
-	add.w	#SINE_LEN/4,d1
-	and.w	#SINE_LEN-1,d0
-	and.w	#SINE_LEN-1,d1
+	addi.w	#SINE_LEN/4,d1
+	andi.w	#SINE_LEN-1,d0
+	andi.w	#SINE_LEN-1,d1
 	add.w	d0,d0
 	add.w	d1,d1
 	move.l	sine_pointer(a4),a0
@@ -746,10 +746,10 @@ setup_hi_screen:
 	move.l	#WID112+PIXEL8,d3	
 	move.l	#WID320+PIXEL8,d4	
 	move.l	intro_hed_pointer(a4),a0
-	move.l	10*jsprite_e+jsprite_paramsixel_width(a0),d5
+	move.l	(10*jsprite_e)+jsprite_paramsixel_width(a0),d5
 	move.w	intro_counter2(a4),d6
 	mulu	#15,d6
-	move.l	10*16+jsprite_data(a0),a0
+	move.l	(10*16)+jsprite_data(a0),a0
 	move.l	hi_screen_pointer(a4),a1	
 	bsr	blitter_rotate_bitmap
 
@@ -1004,7 +1004,7 @@ do_hi_score:
 	move.b	d2,(a0)+
 	dbra	d7,.cloop
 
-;	bsr	write_hi_score_to_eprom
+	bsr	write_hi_score_to_eprom
 .next_part:
 	bsr	no_objects
 	sf	no_exit(a4)     
@@ -1186,7 +1186,7 @@ hi_score_stuff:
 	WAIT_GPU
 	MOVE.L	#text_buffer_pointer,D0
 	lea	builda_wibbly_text_prog,a0
-	lea 	buildb_wibbly_text_gpu,a1
+	lea buildb_wibbly_text_gpu,a1
 	move.l	#buildc_wibbly_text_gpue,d0
 	sub.l	#buildb_wibbly_text_gpu,d0
 	bsr	fast_copy_bytes
@@ -1353,39 +1353,6 @@ hi_score_stuff:
 	move.l	#(32<<16)+48,d5
 	
 	move.l	screen_pointers(a4),a1
-	
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-*	illegal
-*	bsr	blitter_scale_bitmap		; problem
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
-******************************************
 
 .no_sprite:
 	movem.w	(sp)+,d0-d1
@@ -1655,7 +1622,7 @@ print_en:
 	st	credit_text_done(a4)
 	rts	
 .cont:		
-.no_new_line:	
+.no_new_line:
 	STACKOBJ
 	move.w	#BITMAP_OBJECT,obj_type(a0)
 	move.w	credit_screen_offset(a4),d1
@@ -1704,7 +1671,8 @@ print_en:
 	move.l	a1,current_list_pointer(a4)
 	add.w	d0,bytes_in_object_list(a4)                
 
-.zero:	UNSTACKOBJ
+.zero:
+	UNSTACKOBJ
 	tst.b	text_half_speed
 	beq.s	.ok
 	moveq	#1,d0
@@ -3116,7 +3084,7 @@ init_stars:
 	move.w	d0,(a0)+
 	move.w	d6,(a0)+
 	add.w	#3000/NUM_STARS,d6
-	move.w	#1<<8+$30,(a0)+	
+	move.w	#(1<<8)+$30,(a0)+	
 	bsr	get_random
 	and.w	#$ff00,d0
 	move.w	d0,(a0)+
@@ -3143,7 +3111,9 @@ trev_gpu:
 	jsr	SETUPGPU
 	rts
 
+; TODO: look as to why this crashes
 write_hi_score_to_eprom:
+	rts	; crashes
 
 hi_conv_buffer		equ	128
 
@@ -3249,10 +3219,11 @@ hi_conv_buffer		equ	128
 	unlk	a6
 	movem.l	(sp)+,d0-a6
 	rts
-	    
+
+; TODO: look as to why this crashes
 read_hi_score_from_eprom:
 	jsr	restore_eeprom
-	rts	; not right now
+	rts	; crashes
 
 	movem.l	d0-a6,-(sp)
 	link	a6,#hi_conv_buffer

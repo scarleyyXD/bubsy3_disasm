@@ -114,7 +114,7 @@ LIFEINIT:
 ;;;ASBx: ; \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
 ;;;ASBx: ; LOAD SCREEN INIT
 ;;;ASBx: ;******************************** LEVEL INIT SOUND SYSTEM
-;	jsr	write_hi_score_to_eprom						;encode eeprom ensure we save the last level
+	jsr	write_hi_score_to_eprom						;encode eeprom ensure we save the last level
 	sf	MUSICCUR							;kill H & M DMA - init sound status shadow, get ready to start sound
 	
 .NOVOICE:

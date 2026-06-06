@@ -111,7 +111,7 @@ return1_pause:
 	jsr	DISABLE_
 	jsr	ENABLE_F
 	
-;	jsr	write_hi_score_to_eprom			;decode eeprom
+	jsr	write_hi_score_to_eprom			;decode eeprom
 	
 	move.w	TEMP9,STIMER
 	clr.w	pause_type

@@ -7,18 +7,18 @@ color_p	equ	0	; COLOR POINTER BODGE
 	.endm
 
 .macro	START_GPU
-	move.l	#$1,G_CTRL-BASE(a5)
+	move.l	#1,G_CTRL-BASE(a5)
 	.endm
 
 .macro	STOP_GPU
-	move.l	#$0,G_CTRL-BASE(a5)
+	move.l	#0,G_CTRL-BASE(a5)
 	.endm
 
 .macro	WAIT_GPU
 .1\~:	tst.l	gpu_routine
 	bne.s	.1\~
 	.endm
-	
+
 	extern	fasta_gpu_sprite_draw_prog
 	extern	fastb_gpu_sprite_draw
 	extern	fastc_gpu_sprite_drawe
