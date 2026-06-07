@@ -19,24 +19,24 @@ color_p	equ	0	; COLOR POINTER BODGE
 	bne.s	.1\~
 	.endm
 
-	extern	fasta_gpu_sprite_draw_prog
-	extern	fastb_gpu_sprite_draw
-	extern	fastc_gpu_sprite_drawe
-	extern	gpu_routine
-	extern	sprite_return_obytes
-;;;	extern	ar,um
-	extern	sprite_params
-	extern	rad_params
-	extern	builda_star_prog
-	extern	buildb_star_gpu
-	extern	buildc_star_gpue
-	extern	builda_circle_prog
-	extern	buildb_circle_gpu
-	extern	buildc_circle_gpue
-	extern	xxx
-	extern	init_gpu
-	extern	builda_wibbly_text_prog
-	extern	buildb_wibbly_text_gpu
-	extern	buildc_wibbly_text_gpue
-	extern	wibbleparams
-	extern	starparams
+	.globl	fasta_gpu_sprite_draw_prog
+	.globl	fastb_gpu_sprite_draw
+	.globl	fastc_gpu_sprite_drawe
+	.globl	gpu_routine
+	.globl	sprite_return_obytes
+;;;	.globl	ar,um
+	.globl	sprite_params
+	.globl	rad_params
+	.globl	builda_star_prog
+	.globl	buildb_star_gpu
+	.globl	buildc_star_gpue
+	.globl	builda_circle_prog
+	.globl	buildb_circle_gpu
+	.globl	buildc_circle_gpue
+	.globl	xxx
+	.globl	init_gpu
+	.globl	builda_wibbly_text_prog
+	.globl	buildb_wibbly_text_gpu
+	.globl	buildc_wibbly_text_gpue
+	.globl	wibbleparams
+	.globl	starparams

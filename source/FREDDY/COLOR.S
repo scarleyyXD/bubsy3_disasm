@@ -7,7 +7,7 @@
 ; a0 - apl file
 ; a1 - pointer to a full palette 
 
-	if	!STRIP
+	if	STRIP=FALSE
 conert_apl_palette:
 	lea	$24(a0),a0
 	move.w	#256-1,d7
@@ -41,7 +41,7 @@ load_full_palette:
 	bsr	fast_copy_bytes
 	rts
 
-	if	!STRIP
+	if	STRIP=FALSE
 load_full_marv_cry_palette:
 	addq.l	#2,a0
 load_full_cry_palette:
@@ -167,7 +167,7 @@ change_blue		equ -40
 ; d1 - intensity ( 1-256 )
 ; a0 - source list
 ; a1 - dest list
-	if	!STRIP
+	if	STRIP=FALSE
 fade_cry_colors:
 	subq.w	#1,d0
 .loop:
@@ -220,7 +220,7 @@ fade_rgb_colors:
 
 ; a0 - color list source pointer
 
-	if	!STRIP
+	if	STRIP=FALSE
 get_color_list_length:
 	moveq	#0,d0
 	addq.l	#4,a0

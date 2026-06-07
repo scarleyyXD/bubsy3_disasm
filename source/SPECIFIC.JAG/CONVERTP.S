@@ -10,7 +10,7 @@
 	bne.s	.clp
 	move.w	#pal_n_vde+1,CHANGE5+2			;set new line for the interrupt
 
-	move.w	#((disp_height-32+disp_change)*2+ntsc_n_vdb)*8-((disp_height-32)*2+ntsc_n_vdb)*8,d0
+	move.w	#(((disp_height-32+disp_change)*2+ntsc_n_vdb)*8)-(((disp_height-32)*2+ntsc_n_vdb)*8),d0
 	
 ;;	add.w	d0,OVER1+2
 	add.w	d0,OVER2+2

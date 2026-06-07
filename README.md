@@ -15,7 +15,9 @@ Known issues with the source currently:
 
 If you'd like to contribute, shoot up a PR (pull request) and I will accept any fixes when I can.
 
-To build the game, run `build.bat` in the root folder. It will produce two files that you must import into the game.
+To build the game, run `build.bat` in the root folder.
+
+You must have the original files to properly build the game. Find the unpacker at `tools/unpack.py`, then select your Bubsy ROM.
 
 Credits for source code:
 * Andrew Seed (https://forums.atariage.com/profile/36194-seedy1812/)

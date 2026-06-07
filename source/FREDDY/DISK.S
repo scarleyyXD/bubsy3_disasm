@@ -1,9 +1,9 @@
 .macro	SUBTRACT_MEMORY val
-	sub.l	#val,memory_used(a4)
+	sub.l	#\val,memory_used(a4)
 	.endm
 
 .macro	ADD_MEMORY val
-	add.l	#val,memory_used(a4)
+	add.l	#\val,memory_used(a4)
 	.endm
 
 .macro	STANDARD_LOAD file,ptr

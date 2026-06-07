@@ -101,7 +101,7 @@ stary_loop:
 	bsr	starfield_job
 	bsr	setup_screen_objects
 	bsr	bubsy_zoom
-	bsr 	swapscreen
+	bsr swapscreen
 	addq.w	#1,intro_counter(a4)
 	addq.b	#1,star_counter(a4)
 	tst.b	exit_ex(a4)
@@ -1421,11 +1421,11 @@ print_title_screen:
 	UNSTACKOBJ
 	rts
 
-print_en:    	
+print_en:
 	lea	builda_circle_prog,a0
 	lea	buildb_circle_gpu,a1
 	move.l	#buildc_circle_gpue,d0
-	sub.l	#buildb_circle_gpu,d0 
+	sub.l	#buildb_circle_gpu,d0
 	bsr	fast_copy_bytes
 	
 	lea	rad_params,a1
@@ -1434,7 +1434,7 @@ print_en:
 	move.l	title_gfx_pointer(a4),(a1)+
 	move.l	#mag_pointer+data,(a1)+
 	move.l	intro_hed_pointer(a4),a2
-	add.l	#jsprite_e*12+jsprite_data,a2
+	add.l	#(jsprite_e*12)+jsprite_data,a2
 	move.l	a2,(a1)+
 	move.l	#en_x+data,(a1)+
 	move.l	#en_y+data,(a1)+
@@ -1442,7 +1442,7 @@ print_en:
 	move.l	title_gfx_pointer(a4),(a1)+
 	move.l	#mag_pointer+data,(a1)+
 	move.l	intro_hed_pointer(a4),a2
-	add.l	#jsprite_e*13+jsprite_data,a2
+	add.l	#(jsprite_e*13)+jsprite_data,a2
 	move.l	a2,(a1)+
 	move.l	#en_x2+data,(a1)+
 	move.l	#en_y2+data,(a1)+
@@ -1734,10 +1734,12 @@ print_en:
 	add.w	d0,bytes_in_object_list(a4)
 	rts
 
-.bounce:	tst.b	(a0)
+.bounce:
+	tst.b	(a0)
 	beq.s	.addx
 	subq.w	#2,(a2)
-.addx:	addq.w	#1,(a2)
+.addx:
+	addq.w	#1,(a2)
 	cmp.w	#ENLARGE/2,(a2)
 	seq	d0
 	eor.b	d0,(a0)
@@ -1748,7 +1750,8 @@ print_en:
 	tst.b	(a1)
 	beq.s	.addy
 	subq.w	#2,(a3)
-.addy:	addq.w	#1,(a3)
+.addy:
+	addq.w	#1,(a3)
 	cmp.w	#ENLARGE/2,(a3)
 	seq	d0
 	eor.b	d0,(a1)
@@ -1759,10 +1762,12 @@ print_en:
 	eor.b	d0,(a1)
 	rts
 
-rmw_down:	move.l	rmw_data2(a4),a0
+rmw_down:
+	move.l	rmw_data2(a4),a0
 	move.w	scree_height_fred(a4),d0
 	subq.w	#1,d0
-.darken_loop:	subq.b	#8,1(a0)
+.darken_loop:
+	subq.b	#8,1(a0)
 	subq.b	#8,3(a0)
 	subq.b	#8,5(a0)
 	subq.b	#8,7(a0)
@@ -1770,11 +1775,13 @@ rmw_down:	move.l	rmw_data2(a4),a0
 	dbra	d0,.darken_loop    
 	rts
 
-darken_screen:	bsr.s	.do
+darken_screen:
+	bsr.s	.do
 	bsr.s	.do
 	rts
 
-.do:	STACKOBJ
+.do:
+	STACKOBJ
 	move.w	#BITMAP_OBJECT,obj_type(a0)
 	move.w	#ntsc_n_vdb,obj_ypos(a0)
 	move.w	scree_height_fred(a4),obj_height(a0)  
@@ -1802,8 +1809,9 @@ circle_add		equ -44
 
 	move.l	half_circle_pointer(a4),a1
 	lea	CIRC_LEN(a1),a1
-	move.w	#CIRC_LEN/2-1,d0
-.cloop:	neg.w	(a1)
+	move.w	#(CIRC_LEN/2)-1,d0
+.cloop:
+	neg.w	(a1)
 	add.w	#-1,(a1)+
 	dbra	d0,.cloop	
 
@@ -1822,7 +1830,8 @@ circle_add		equ -44
  	move.l	half_circle_pointer(a4),a0
 	move.l	mag_pointer(a4),a1
 	
-.gen_loop:	move.w	circle_index(a6),d0
+.gen_loop:
+	move.w	circle_index(a6),d0
 	add.w	d0,d0
 	move.w	(a0,d0),d0
 	move.w	d0,d1
@@ -1834,7 +1843,8 @@ circle_add		equ -44
 	sub.w	#$8000,d1
 	neg.w	d1
 	add.w	#$7fff,d1
-.sign:       	mulu	#64,d1
+.sign:
+	mulu	#64,d1
 	swap	d1
 	move.w	d1,d2
 	move.w	d1,d4
@@ -1842,7 +1852,8 @@ circle_add		equ -44
 	neg.w	d2	
 	moveq	#-32,d3
 
-.pix_loop:	cmp.w	d3,d2
+.pix_loop:
+	cmp.w	d3,d2
 	bgt.s	.no_pix		
 	cmp.w	d3,d1
 	ble.s	.no_pix
@@ -1862,8 +1873,10 @@ circle_add		equ -44
 	add.w	#32,d5
 	move.w	d5,(a1)+	
 	bra.s	.dec
-.no_pix:	move.w	#-1,(a1)+
-.dec:	addq.w	#1,d3
+.no_pix:
+	move.w	#-1,(a1)+
+.dec:
+	addq.w	#1,d3
 	cmp.w	#32,d3
 	bne.s	.pix_loop
 
@@ -1889,7 +1902,8 @@ fade_black_title_screen:
 	move.l	temp_pal_pointer(a4),a1
 	addq.l	#2,a1
 	bsr	fade_rgb_colors	
-.no:	rts
+.no:
+	rts
 	
 fade_down_title_screen:	
 
@@ -2178,7 +2192,7 @@ flash_start:
 	rts
 
 draw_start:
-	if	!ONLY_OPTIONS
+	if	ONLY_OPTIONS
 	moveq	#16,d0                 
 	move.l	current_list_pointer(a4),a1
 	bsr	fix_object_boundry
@@ -2651,7 +2665,8 @@ reg_pal		equ -PAL_SIZE
 	bsr	blitter_copy
 
 	unlk	a6
-.done: 	rts
+.done:
+	rts
 
 bigexclamation_stuff:
 	move.w	exclamation_action(a4),d0

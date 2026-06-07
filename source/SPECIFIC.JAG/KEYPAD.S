@@ -25,34 +25,34 @@ JOYIN		equ	JOYSTICK
 JOYOUT		equ	JOYSTICK
 
 fire_a_pressed:
-	Move.l	joycur1(pc),d0
+	move.l	joycur1(pc),d0
 	not.l	d0
-	Btst	#FIRE_A,d0
-	Rts
+	btst	#FIRE_A,d0
+	rts
 fire_b_pressed:
-	Move.l	joycur1(pc),d0
+	move.l	joycur1(pc),d0
 	not.l	d0
-	Btst	#FIRE_B,d0
-	Rts
+	btst	#FIRE_B,d0
+	rts
 fire_c_pressed:
-	Move.l	joycur1(pc),d0
+	move.l	joycur1(pc),d0
 	not.l	d0
-	Btst	#FIRE_C,d0
-	Rts
+	btst	#FIRE_C,d0
+	rts
 options_pressed:
-	Move.l	joycur1(pc),d0
-	Btst	#OPTIONS,d0
-	Rts
+	move.l	joycur1(pc),d0
+	btst	#OPTIONS,d0
+	rts
 
 check_1_and_3:
-	Move.l	joycur1(pc),d0
-	Btst	#KEY_1,d0
-	Beq.s	.Not_Pressed
-	Btst	#KEY_3,d0
-	Beq.s	.Not_Pressed
+	move.l	joycur1(pc),d0
+	btst	#KEY_1,d0
+	beq.s	.Not_Pressed
+	btst	#KEY_3,d0
+	beq.s	.Not_Pressed
 	sf	paused_view
 .Not_Pressed:	
-	Rts
+	rts
 
 read_joypad:
 readpad:
@@ -90,7 +90,6 @@ readpad:
 .not:	eor.l	d1,d0
 	and.l	d1,d0
 	move.l	d0,joyedge1		;joypad, buttons, keys that were just pressed
-
 
 ;scan for player 2
 	move.l	#$0ffffff3,d1		; d1 = Joypad data mask
@@ -151,40 +150,40 @@ readpad:
 .no_cheat2:
 	endif
 	rts
-Hash_Asterisk_Pressed1:
-	Move.l	joycur1(pc),d0
-	Btst	#STAR,d0
-	Beq.s	.Not_Pressed
-	Btst	#HASH,d0
-.Not_Pressed:	
-	Rts
 
-Hash_Asterisk_Pressed2:
-	Move.l	joycur2(pc),d0
-	Btst	#STAR,d0
-	Beq.s	.Not_Pressed
-	Btst	#HASH,d0
+Hash_Asterisk_Pressed1:
+	move.l	joycur1(pc),d0
+	btst	#STAR,d0
+	beq.s	.Not_Pressed
+	btst	#HASH,d0
 .Not_Pressed:	
-	Rts
+	rts
+Hash_Asterisk_Pressed2:
+	move.l	joycur2(pc),d0
+	btst	#STAR,d0
+	beq.s	.Not_Pressed
+	btst	#HASH,d0
+.Not_Pressed:	
+	rts
 
 keys_1_2_3_down:
-	Move.l	joycur1(pc),d0
-	Btst	#KEY_1,d0
-	Beq.s	.Not_Pressed
-	Btst	#KEY_2,d0
-	Beq.s	.Not_Pressed
-	Btst	#KEY_3,d0
+	move.l	joycur1(pc),d0
+	btst	#KEY_1,d0
+	beq.s	.Not_Pressed
+	btst	#KEY_2,d0
+	beq.s	.Not_Pressed
+	btst	#KEY_3,d0
 .Not_Pressed:	
-	Rts
+	rts
 
 direction_pressed:
 	move.l	d1,-(sp)
-	Move.l	joycur1(pc),d0
-	Moveq	#20,d1
-	Lsr.l	d1,d0
-	And.w	#$f,d0
+	move.l	joycur1(pc),d0
+	moveq	#20,d1
+	lsr.l	d1,d0
+	and.w	#$f,d0
 	move.l	(sp)+,d1
-	Rts
+	rts
 
 joycur1:	dc.l	0
 joyedge1:	dc.l	0

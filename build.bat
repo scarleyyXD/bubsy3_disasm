@@ -1,8 +1,12 @@
 @echo off
 setlocal
-set MACFLAGS=-m68000 -isource -isource\freddy -l
-set ALNFLAGS=-a 4000 x x -m
+set MACFLAGS=-m68000 -isource -isource\freddy
+set ALNFLAGS=-a 4000 x x
 set ASMOPTS=+o0 +o1 +o2
+
+:: clean-up old files first...
+del game.txt
+del game.dta
 
 tools\rmac %MACFLAGS% %ASMOPTS% -o gpu.o source\freddy\gpu.s
 if %errorlevel% neq 0 goto error
@@ -16,13 +20,16 @@ del gpu.o
 
 tools\filefix -q game.abs
 if %errorlevel% neq 0 goto error
+ren game.tx game.txt
+:: disable these if you'd like to
 del game.abs
 del game.sym
+del game.db
 
-tools\pp p game.tx GAME.TXT
-tools\pp p game.dta GAME.DTA
-del game.tx
-ren game.dta GAME.DTA
+python "%~dp0/tools/build_rom.py"
+if %errorlevel% neq 0 goto error
+
+echo Build finished.
 
 :error
 exit /b

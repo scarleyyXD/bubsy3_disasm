@@ -464,15 +464,15 @@ BUBSYMOVEOBJECT:
 	beq.s	.B30
 	bmi.s	.B20
 
-	cmp.W	#$0800,d0									; VX is +ive
-	bCS.s	.B11
-	move.W	#$0800,d0
+	cmp.w	#$0800,d0									; VX is +ive
+	bcs.s	.B11
+	move.w	#$0800,d0
 	bra.s	.B11
 	
 .B20:												;vx is -ive
-	cmp.W	#$f800,d0
-	bCC.s	.B11
-	move.W	#$f800,d0
+	cmp.w	#$f800,d0
+	bcc.s	.B11
+	move.w	#$f800,d0
 	
 .B11:
 	tst.b	in_water
@@ -482,7 +482,7 @@ BUBSYMOVEOBJECT:
 	
 .no_water:
 	ext.l	d0
-	asl.L	#8,d0
+	asl.l	#8,d0
 	
 	add.l	d0,OBJX(A5)
 	
@@ -492,7 +492,7 @@ BUBSYMOVEOBJECT:
 	rts
 	
 .B10:												;the object is in the air
-	move.W	OBJVX(A5),d0
+	move.w	OBJVX(A5),d0
 	tst.b	in_water
 	beq.s	.no_water1
 	muls	#BUBVX_m,d0
@@ -500,10 +500,10 @@ BUBSYMOVEOBJECT:
 	
 .no_water1:
 	ext.l	d0
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJX(A5)
 
-	move.W	OBJVY(A5),d0
+	move.w	OBJVY(A5),d0
 	tst.b	in_water
 	beq.s	.no_water2
 	muls	#BUBVY_m,d0
@@ -511,7 +511,7 @@ BUBSYMOVEOBJECT:
 	
 .no_water2:
 	ext.l	d0
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJY(A5)
 	rts
 
@@ -533,45 +533,45 @@ MOVEOBJECT:
 	beq.s	.B30
 	bmi.s	.B20
 
-	cmp.W	#$0800,d0									; VX is +ive
-	bCS.s	.B11
-	move.W	#$0800,d0
+	cmp.w	#$0800,d0									; VX is +ive
+	bcs.s	.B11
+	move.w	#$0800,d0
 	bra.s	.B11
 	
 .B20:												;vx is -ive
-	cmp.W	#$f800,d0
-	bCC.s	.B11
-	move.W	#$f800,d0
+	cmp.w	#$f800,d0
+	bcc.s	.B11
+	move.w	#$f800,d0
 	
 .B11:
 	ext.l	d0
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJX(A5)
 	
 .B30:
-	bRA	STICKOBJECTTOPLAYFIELD
+	bra	STICKOBJECTTOPLAYFIELD
 	
 .B10:												;the object is in the air
 	move.W	OBJVX(A5),d0
 	ext.l	d0
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJX(A5)
 
 	move.W	OBJVY(A5),d0
 	ext.l	d0
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJY(A5)
 	rts
 
 ACCELOBJX:
 	ext.l	d0											;do the velocity
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJX(A5)
 	rts
 
 ACCELOBJY:
 	ext.l	d0											;do the velocity
-	asl.L	#8,d0
+	asl.l	#8,d0
 	add.l	d0,OBJY(A5)
 	rts
 
@@ -607,19 +607,19 @@ CHECKOBJBOX:
 ;;;ASBx: ;************************************************************************
 
 NEWANIMATION:
-	cmp.L	ANIMSCRPTR,d0
+	cmp.l	ANIMSCRPTR,d0
 	bne.s	STARTANIMATION
 	rts
 
 STARTANIMATIONFAR:
 STARTANIMATION:
-	cmp.L	ANIMSCRPTR,d0
+	cmp.l	ANIMSCRPTR,d0
 	bne.s	.ok
 	or.b	#ANIMFLAG,BUBSYFLAGS
 	rts
 	
 .ok:
-	move.L	d0,ANIMSCRPTR
+	move.l	d0,ANIMSCRPTR
 	moveq	#1,d1
 	move.b	d1,ANIMTIMER
 	move.b	d1,ANIMSPEED
@@ -1182,7 +1182,7 @@ CHECKFORLANDNG:
 	and.w	#WATER,d0
 	bne.s	.FINDSURFACE
 
-	MOVE.B	#SPLASHSTATE,BUBSTATE
+	move.b	#SPLASHSTATE,BUBSTATE
 	clr.w	BUBVY
 	addq.w	#2,BUBY
 	rts
@@ -1200,12 +1200,12 @@ CHECKFORLANDNG:
 	and.b	BUBSYFLAGS,d0
 	bne.s	.NOTRUBBER
 
-	MOVE.B	#JUMPSTATE,BUBSTATE									;from tree limb
+	move.b	#JUMPSTATE,BUBSTATE									;from tree limb
 
 ; DSW WWW THIS IS AN OBVIOUS AND DANGEROUS ERROR (SEE ABOVE)
 	and.b	#~BUBONRAFT,BUBSYFLAGS1
 	and.b	#~BUBONRAFT,BUBSYFLAGS
-	MOVE.B	#32,BUBSYFRAME
+	move.b	#32,BUBSYFRAME
 
 	move.w	#$f300,BUBVY									;get inital velocity for jump
 
@@ -1222,16 +1222,16 @@ CHECKFORLANDNG:
 	subi.w	#16,BUBY
 	
 .B00:													;entry point for landng on an object
-	MOVE.B	#JUMPLANDSTATE,BUBSTATE
+	move.b	#JUMPLANDSTATE,BUBSTATE
 	
 	move.L	#JUMPLANDANIMATION,d0
 	bsr	STARTANIMATION
 
-	MOVE.B	#31,BUBSYFRAME
+	move.b	#31,BUBSYFRAME
 	move.w	BUBVX,d0
 	bne.s	.B31
 
-	MOVE.B	#6,ANIMTIMER
+	move.b	#6,ANIMTIMER
 	
 .B31:
 	move.w	BUBVX,d0											;if landng push back, VX =0
@@ -1271,7 +1271,7 @@ CHECKFORLANDNG:
 	asl.w	#2,d0
 	move.w	d0,BUBVX
 
-	MOVE.B	#1,ANIMTIMER											;do short landng
+	move.b	#1,ANIMTIMER											;do short landng
 	
 .B31A:														;entry point for normal landng
 	bsr	STICKOBJECTTOPLAYFIELD
@@ -1336,7 +1336,7 @@ CHECKFORLANDNG:
 
 	and.w	#~BUBSYHFLIP,d0
 	or.b	d0,BUBSYFLAGS
-	MOVE.B	#SQUISHSTATE,BUBSTATE
+	move.b	#SQUISHSTATE,BUBSTATE
 	
 .B40:
 	rts
@@ -1350,12 +1350,12 @@ CHECKFORLANDNG:
 	beq.s	.TUMBLE
 	
 .ACCORDIAN:
-	MOVE.B	#ACCORDIANSTATE,BUBSTATE
-	move.L	#ACCORDIANANIMATION2,d0
+	move.b	#ACCORDIANSTATE,BUBSTATE
+	move.l	#ACCORDIANANIMATION2,d0
 	bra	STARTANIMATION
 	
 .TUMBLE:
-	MOVE.B	#ROLLFALLSTATE,BUBSTATE
+	move.b	#ROLLFALLSTATE,BUBSTATE
 	rts
 
 ;;;ASBx: ;************************************************************************
@@ -3295,7 +3295,7 @@ BUBJUMP:
 	move.b	BUBSYFLAGS1,D1								;jump at apex or in descent - check for glide
 	and.b	#~GLIDEFLAG,BUBSYFLAGS1
 	moveq	#GLIDEFLAG,D0
-	and.B	d1,D0								;jump at apex or in descent - check for glide
+	and.b	d1,D0								;jump at apex or in descent - check for glide
 	bne.s	.B25
 	move.w	EDGESTICK,d0
 	and.w	GLIDEBUTTON,d0
@@ -3306,9 +3306,9 @@ BUBJUMP:
 	bra	BUBGLIDE
 
 .B30:
-	cmp.L	#CATFIGHTANIMATION,d0
+	cmp.l	#CATFIGHTANIMATION,d0
 	beq.s	.AT0
-	move.B	#30,BUBSYFRAME
+	move.b	#30,BUBSYFRAME
 	and.b	#~ANIMFLAG,BUBSYFLAGS
 
 .AT0:
@@ -3420,7 +3420,7 @@ BUBGLIDE:										;this is the logic for glide state (duh)
 
 .B30:											;start animation if not in a take
 .AT1:
-	move.L	#GLIDEANIMATION,d0
+	move.l	#GLIDEANIMATION,d0
 	bsr	STARTANIMATION
 
 .AT0:											;apply gravity
@@ -3446,7 +3446,7 @@ KILLGAME:
 	JMP	INITOBJS										;clear object
 
 BUBSMACK:
-	move.L	#SMACKANIMATION,d0
+	move.l	#SMACKANIMATION,d0
 	bsr	NEWANIMATION
 
 	moveq	#ANIMFLAG,d0
@@ -3454,7 +3454,7 @@ BUBSMACK:
 	bne.s	.B10
 
 	move.b	#UNCONCIOUSSTATE,BUBSTATE
-	move.L	#UNCONCIOUSANIMATION,d0
+	move.l	#UNCONCIOUSANIMATION,d0
 	bsr	STARTANIMATION
 
 .B10:
@@ -3788,6 +3788,5 @@ W5L2LOADANIM:
 W5L3LOADANIM:
 	dc.b	ALABEL,8,15,8,17,8,18,8,16,8,19,ALOOP
 	
-GAME_OVER_FLAG:
-	dc.b	0
+GAME_OVER_FLAG:	dc.b	0
 	even
