@@ -2,8 +2,8 @@ color_p	equ	0	; COLOR POINTER BODGE
 
 ;---------------------------------------------------
 ; GPU+ASSOCIATE MACROS
-.macro	GPU_SUB	O1
-	move.l	\O1,gpu_routine
+.macro	GPU_SUB
+	move.l	\1,gpu_routine
 	.endm
 
 .macro	START_GPU

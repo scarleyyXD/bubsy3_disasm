@@ -100,7 +100,7 @@ for i, name in enumerate(filename_order):
     fs_file_data += file_data
     offset += len(file_data)
 
-builtROM = os.path.dirname(scriptPath) + "/bubsy728.j64"
+builtROM = os.path.dirname(scriptPath) + "/bubsy728.rom"
 with open(builtROM, "wb") as rom:
     rom.write(header_data)
     rom.write(bootloader_data)

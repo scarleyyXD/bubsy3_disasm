@@ -7,6 +7,7 @@ musicoff:
 	rts
 
 DISABLET:
+DISABLETIMER:
 *	bclr	#TIMERINTBIT,intmask
 	sf	mus
 	rts
@@ -14,6 +15,7 @@ DISABLET:
 mus:	dcb.w	1,0
 
 ENABLETI:
+ENABLETIMER:
 *	bset	#TIMERINTBIT,intmask
 	st	mus
 	rts
@@ -41,7 +43,8 @@ LOAD_MUSIC:
 	jsr	PT_MOD_I		;setup song and player
 
 .turned_off:
-.exit:	st	musloaded
+.exit:
+	st	musloaded
 	rts
 	bra.s	.exit
 musloaded:	dc.b	0

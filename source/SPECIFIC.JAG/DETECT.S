@@ -57,7 +57,8 @@ draw_h_line:
 	move.l	d5,A1_PIXEL			;set start point
 draw_common:
 	move.l	#PATDSEL|UPDA1|DSTEN|CLIP_A1,B_CMD
-noTT:	rts
+noTT:
+	rts
 	
 draw_v_line:
 	cmp.w	d4,d5
@@ -74,7 +75,8 @@ draw_v_line:
 	move.w	d5,d6
 	move.l	d6,A1_PIXEL			;set start point
 	move.l	#PATDSEL|UPDA1|DSTEN|CLIP_A1,B_CMD
-.no:	rts
+.no:
+	rts
 
 DRAW_DETECTPOINTS:
 	movem.l	d0/d2-d3/d7/a0-a1,-(sp)

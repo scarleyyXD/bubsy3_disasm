@@ -1,6 +1,6 @@
 SCREEN_WIDTH	equ	324
-NTSC_HEI1		equ	(disp_height)
-PAL_HEI1		equ	(disp_height+disp_change)
+NTSC_HEIGHT1	equ	(disp_height)
+PAL_HEIGHT1		equ	(disp_height+disp_change)
 
 PAL				equ	0
 NTSC			equ	1

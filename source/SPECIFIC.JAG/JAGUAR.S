@@ -57,6 +57,7 @@ MAX_NUMBER_OF_MAP_COMBINATIONS	equ	30000
 	cmp.w	BUBY,d0
 	blt.s	.flip
 	moveq	#8,d7
-.flip:	move.b	d7,OBJOAM0(a5)
+.flip:
+	move.b	d7,OBJOAM0(a5)
 .no_need:
 	.endm

@@ -1,12 +1,12 @@
 NTSC_HMID	equ	823
 NTSC_VWIDTH	equ	1409
 NTSC_VMID	equ	322
-NTSC_HEI0	equ	240
+NTSC_HEIGHT0	equ	240
 
 PAL_HMID	equ	843
 PAL_VWIDTH	equ	1281
 PAL_VMID	equ	322
-PAL_HEI0	equ	280
+PAL_HEIGHT0	equ	280
 
 ON	equ	1
 OFF	equ	0
@@ -17,12 +17,12 @@ init:
 	move.w	#NTSC_HMID,d2
 	move.w	#NTSC_VWIDTH,d0
 	move.w	#NTSC_VMID,d6
-	move.w	#NTSC_HEI0,d4
+	move.w	#NTSC_HEIGHT0,d4
 	else
 	move.w	#PAL_HMID,d2
 	move.w	#PAL_VWIDTH,d0
 	move.w	#PAL_VMID,d6
-	move.w	#PAL_HEI0,d4
+	move.w	#PAL_HEIGHT0,d4
 	endif
 
 	move.w	d0,width

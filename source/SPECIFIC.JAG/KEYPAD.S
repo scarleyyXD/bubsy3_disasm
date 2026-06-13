@@ -87,7 +87,8 @@ readpad:
 
 	move.l	joycur1(pc),d0		; old joycur needed for determining the new joyedge
 	move.l	d1,joycur1		; Current joypad reading stored into joycur
-.not:	eor.l	d1,d0
+.not:
+	eor.l	d1,d0
 	and.l	d1,d0
 	move.l	d0,joyedge1		;joypad, buttons, keys that were just pressed
 
@@ -289,5 +290,6 @@ get_pad_press:
 .exit:
 	rts
 
-.pad_bits:	dc.b	KEY_1,KEY_2,KEY_3,KEY_4
-			dc.b	KEY_5,KEY_6,KEY_7,KEY_8,KEY_9
+.pad_bits:
+	dc.b	KEY_1,KEY_2,KEY_3,KEY_4
+	dc.b	KEY_5,KEY_6,KEY_7,KEY_8,KEY_9

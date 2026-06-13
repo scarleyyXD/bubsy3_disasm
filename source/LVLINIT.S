@@ -238,7 +238,7 @@ LIFEINIT:
 	andi.b	#%01000011,PLAYERFLAGS						;clear all playerflags .not.SHOWLVTXT .not.BONUSDONEFLAG
 	andi.b	#%00010000,GAMEFLAG1						;clear other game flags - not bonusflag
 	andi.b	#%00010000,GAMEFLAG0						;not yarnlifeflag
-
+	
 	move.w	BUBSTARTTIME,TIME						;load the time
 
 	sf	NMIVECSEL

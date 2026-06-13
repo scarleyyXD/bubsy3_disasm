@@ -1,4 +1,4 @@
-.macro FRACDIV O1,O2
+.macro	FRACDIV O1,O2
 	tst.w	\O1
 	bne.s	.1\~
 	moveq	#0,\O2

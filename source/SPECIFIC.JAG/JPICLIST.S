@@ -1,4 +1,3 @@
-
 MAX_SPRITES	equ	100
 
 NEW_OL:
@@ -35,12 +34,12 @@ change_ol_lists:
 
 MAKE_OL:	
 	jsr	Setup_Initial_Branch
-	Move.l	Dont_Know_What_This_Does_Pointer,a0
-	Lea	16(a0),a0
+	move.l	Dont_Know_What_This_Does_Pointer,a0
+	lea	16(a0),a0
 	move.l	olist_view_pointer,a1
-	Move.w	#BRA_VCEQ,d0
-	Move.w	#$7ff,d1	
-	Jsr	Make_Branch_Object
+	move.w	#BRA_VCEQ,d0
+	move.w	#$7ff,d1	
+	jsr	Make_Branch_Object
 	move.l	display_number_of_items,d2
 	move.l	display_ol_base,a1
 
@@ -50,7 +49,7 @@ MAKE_OL:
 
 	move.l	olist_view_pointer,a0
 	jsr	build_olist
-	Move.l	Dont_Know_What_This_Does_Pointer,d0
+	move.l	Dont_Know_What_This_Does_Pointer,d0
 	swap	d0
 	move.l	d0,OLP		;reset this pointer
 	rts

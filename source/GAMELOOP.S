@@ -34,21 +34,21 @@ GAMELOOP:
 	if	DETECTMODE
 	jsr	CLS_DETECTSCREEN
 	endif
-	
+
 	jsr	gravity_control
 
 	move.w	WINDY,WINDYOLD				;load windyold ( obviously )
 	move.w	WINDX,WINDXOLD				;load windxold (obviously )
-	
+
 	JSR	TRACKWIND				;have the window track bubsy
 	jsr	center_window
 	JSR	BUBCTRL
-	
+
 	move.l	LVLCODEVEC,a0
 	jsr	(a0)					;execute
-	
+
 	jsr	NEW_OL
-	
+
 	moveq	#OVERLOFF,D0
 	and.B	VBLANKFLAG,D0
 	bne.s	.not_on
@@ -78,14 +78,14 @@ GAMELOOP:
 	cmp.l	#ENTERANIMATION,ANIMSCRPTR
 	bne.s	.high_priority
 	jsr	SETUPBUBSY
-	
+
 .high_priority:
 	move.l	#NO_ROUTINE,ROUTINE_ADDR
 
 	if	SCRIPTMODE
 	JSR	DOOBJAI					;set up enemy objects
 	endif
-	
+
 	move.b	BUBSYFLAGS1,d0				;did we bop something during object AI.
 	andi.b	#BUBSYBOUNCE,d0
 	beq.s	.DOSETUPBUB
@@ -120,14 +120,14 @@ GAMELOOP:
 	move.l	#$00ff0000,BORD1
 	endif
 	moveq	#OVERLOFF,D0
-	and.B	VBLANKFLAG,D0
-	Bne.s	.not_on1
+	and.b	VBLANKFLAG,D0
+	bne.s	.not_on1
 	jsr	view_2_landscapes_b
 
 .not_on1:
 	tst.b	in_water
 	beq.s	.not_in_water
-	
+
 	jsr	DO_WATER_BUBBLE
 
 .not_in_water:
@@ -138,7 +138,7 @@ GAMELOOP:
 	if	DETECTMODE
 	jsr	DRAW_DETECTSCREEN
 	endif
-	
+
 	if	DEBUG
 	move.l	#-9,bad_routine
 	endif
@@ -148,7 +148,7 @@ GAMELOOP:
 	move.l	#$0,BORD1
 	endif
 	jsr	FADER					;do the fader
-	
+
 	bra	GAMELOOP
 
 **********************************************************************************************
@@ -196,13 +196,13 @@ gravity_control:
 	beq.s	.exit
 	st	in_water
 .exit:
-	rts	
-	
+	rts
+
 .grav_table:
 	dc.l	.water1	
 	dc.l	.water2	
 	dc.l	.water3
-	
+
 ;	second	x,y +1
 .water1:	
 	dc.w	361*16,77*16,371*16,88*16
@@ -229,19 +229,19 @@ gravity_control:
 	dc.w	200*16,50*16,363*16,59*16
 	dc.w	167*16,0*16,168*16,20*16
 	dc.w	-1
-	
+
 B_TIME	equ	6	
-	
+
 in_water:	dc.b	0
 anim_pointer:	dc.b	0
 BUB_TYPE:	dc.l	0
 BUB_TIMER:	dc.w	B_TIME-1
 	even
-	
+
 DO_WATER_BUBBLE:
 	moveq	#0,d0
 	move.b	BUBSYFRAME,d0
-	lea  	bubble_table,a0
+	lea	bubble_table,a0
 	lsl.w	#2,d0
 	lea	(a0,d0.w),a0
 	move.w	(a0)+,d4		;this is the animation number
@@ -307,9 +307,9 @@ bubble_anim_table:
 .jump_up:	dc.b	4,5,0
 .glide:		dc.b	2,0
 
-.macro	BBUB o1,o2,o3
-	dc.w	\o1
-	dc.b	\o2,\o3
+.macro	BBUB
+	dc.w	\1
+	dc.b	\2,\3
 	.endm
 	even
 	

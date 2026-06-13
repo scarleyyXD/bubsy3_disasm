@@ -76,7 +76,7 @@ readpad:
 
 	rts
 
-joyedge1:		dc.l		0
-joyedge2:		dc.l		0
-joycur1:		dc.l		0
-joycur2:		dc.l		0
+joyedge1:	dc.l	0
+joyedge2:	dc.l	0
+joycur1:	dc.l	0
+joycur2:	dc.l	0

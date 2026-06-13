@@ -2,8 +2,7 @@
 ;; Decompiled object file by Scarlett<3 (5/20-5/23)
 
 	.data
-
-.text0:	dc.l	'Copyright (1993) Imagitec Design, Inc '
+	.dc.b	'Copyright (1993) Imagitec Design, Inc '
 
 sub_298EE:
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -39,15 +38,12 @@ sub_2997C:
 	move.l  #-4,(a0)+
 	move.l  #$4000,(a0)+
 	clr.l   d0
+	rept	6
 	move.l  d0,(a0)+
-	move.l  d0,(a0)+
-	move.l  d0,(a0)+
-	move.l  d0,(a0)+
-	move.l  d0,(a0)+
-	move.l  d0,(a0)+
+	endr
 	rts
 
-.text1:	dc.l	'Imagitec Design,Inc ½ 1993 written by Trev'
+	.dc.b	'Imagitec Design,Inc ½ 1993 written by Trev'
 
 INIT_SOUND:
 	movem.l	d0-d7/a0-a6,-(sp)
@@ -60,7 +56,7 @@ PT_MOD_INIT:
 	movem.l d1-d7/a0-a6,-(sp)
 	bsr.w	init_mod
 	lea	(dword_2B5DE).l,a6
-	move.l	#2,dword_2B5EE-dword_2B5DE(a6)
+	move.l	#2,$10(a6)
 	movem.l	(sp)+,d1-d7/a0-a6
 	rts
 
@@ -192,7 +188,7 @@ do_sound:		; pseudo-label
 sub_29B58:
 	movem.l d0-d7/a2-a6,-(sp)
 	lea	dword_2B5DE(pc),a2
-	tst.b	byte_2B604-dword_2B5DE(a2)
+	tst.b	$26(a2)
 	beq.w	loc_29C1C
 	tst.b	$27(a2)
 	beq.s	loc_29B7C
@@ -320,7 +316,7 @@ loc_29CB4:
 	tst.w   d1
 	bne.s   loc_29CC8
 	lea	byte_2A7F6(pc),a0
-	move.w	d2,word_2AA04-byte_2A7F6(a0)
+	move.w	d2,$20E(a0)
 loc_29CC8:
 	move.l  d2,d0
 	movem.l (sp)+,d1-d2/a0-a1
@@ -329,9 +325,9 @@ loc_29CC8:
 NOFADE:		; might be this?
 	movem.l d0/a0,-(sp)
 	lea	dword_2B5DE(pc),a0
-	move.l  dword_2B5FC-dword_2B5DE(a0),d0
+	move.l  $1E(a0),d0
 	lea	byte_2A7F6(pc),a0
-	move.w  d0,word_2AA04-byte_2A7F6(a0)
+	move.w  d0,$20E(a0)
 	movem.l (sp)+,d0/a0
 	rts
 
@@ -357,7 +353,7 @@ START_MOD:
 	jsr	ENABLETIMER
 
 	lea	dword_2B5DE(pc),a4
-	st	byte_2B605-dword_2B5DE(a4)
+	st	$27(a4)
 	move.w	#1,$14(a4)
 	movea.l	(sp)+,a4
 	rts
@@ -367,7 +363,7 @@ STOP_MOD:
 	jsr	DISABLETIMER
 
 	lea	dword_2B5DE(pc),a4
-	sf	byte_2B605-dword_2B5DE(a4)
+	sf	$27(a4)
 	lea	$28(a4),a3
 	movea.l	#D_RAM+$800,a4
 	moveq	#3,d7
@@ -417,7 +413,7 @@ GETSAMNO:
 	lea	(a1,d0.w),a1
 	move.b	(a1),d1
 	lea	byte_2A7F6(pc),a0
-	lea	word_2AA06-byte_2A7F6(a0),a0
+	lea	$210(a0),a0
 	mulu.w  #52,d0		; multiply by 52 bytes (length)
 	lea	SAMP_NUMBER(a0,d0.w),a2
 	move.b  (a2),d0
@@ -457,7 +453,7 @@ loc_29E50:
 	movem.l (sp)+,d7/a1/a4
 	rts
 	
-.text2:	dc.l	'Copyright (1993) Imagitec Design, Inc '
+	.dc.b	'Copyright (1993) Imagitec Design, Inc '
 
 init_mod:
 	bsr.s   init_mod_setting
@@ -467,7 +463,7 @@ init_mod:
 ; a0 = mod file ?
 init_mod_setting:
 	lea	byte_2A7F6(pc),a5
-	move.l	a0,off_2A806-byte_2A7F6(a5)	; store the MOD address at $35FC0 !!
+	move.l	a0,$10(a5)	; store the MOD address at $35FC0 !!
 
 	; initially default to 15-channel
 	move.w	#472,d0			; song position(s)	-> 472	($01D8)

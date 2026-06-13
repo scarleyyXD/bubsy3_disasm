@@ -2,7 +2,7 @@
 
 Here lies the source code of Bubsy in: Fractured Furry Tales for the Atari Jaguar, released on December 9, 1994. 
 
-Currently this source is a WIP, this is being converted from Devpac syntax to MadMac syntax.
+Original hash (64-bit FNV-1a): 5C0C7827948F0F27 (binary matching currently not on to-do list right now)
 
 You can find the original source code on this GitHub, or find it here: https://forums.atariage.com/topic/224770-the-atari-jaguar-source-code-thread/#findComment-3693564
 

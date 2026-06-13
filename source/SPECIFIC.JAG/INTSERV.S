@@ -13,4 +13,3 @@ IntInit:
 	move.w	d0,sr
 
 	rts
-

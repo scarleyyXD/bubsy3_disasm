@@ -37,10 +37,10 @@ setup_mystuff:
 
 	bsr	clear_bytes
 	jsr	init_gpu
-	move.w	#PAL_HEI1,scree_height_fred(a4)
+	move.w	#PAL_HEIGHT1,scree_height_fred(a4)
 	cmp.b	#PAL,tv_type
 	beq.s	.pal
-	move.w	#NTSC_HEI1,scree_height_fred(a4)
+	move.w	#NTSC_HEIGHT1,scree_height_fred(a4)
 	
 .pal:	
 	move.l	#MAXOBJECTS*16,d0

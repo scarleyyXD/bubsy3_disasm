@@ -1,14 +1,14 @@
 SPACING		equ	$c
 CONTTXTTAB:
-	dc.b	0-$0A*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
-	dc.b	0-$0B*SPACING/2+320/2
+	dc.b	0-$0A*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
+	dc.b	0-$0B*(SPACING/2)+(320/2)
 CONTNUMTAB:
 	dc.b	'123456789'
 CONTSTAB:
@@ -173,27 +173,27 @@ CONTINUETEXT:	;123456789ABCDEF0123456789ABCDEF
 	dc.B	(SPACING&$ff00)>>8,(SPACING&$ff)
  	
  	dc.b	$FE,ALPHABET	      	; OAM0 HIGH
-	dc.b	$FF,0-$08*SPACING/2+320/2,$00,$20,$00
+	dc.b	$FF,0-$08*(SPACING/2)+(320/2),$00,$20,$00
 	dc.b	'PLAYER '
 PLRNUM	equ	(*-CONTINUETEXT)
 	dc.b	'1'
 CONTX	equ	(*-CONTINUETEXT+1)
-	dc.b	$FF,0-$0B*SPACING/2+320/2,$00,$30,$00
+	dc.b	$FF,0-$0B*(SPACING/2)+(320/2),$00,$30,$00
 CONTNUM	equ	(*-CONTINUETEXT)
 	dc.b	'0 CONTINUES'
 CONTS	equ	(*-CONTINUETEXT-1)
-	dc.b	$FF,0-$0E*SPACING/2+320/2,$00,$48,$00
+	dc.b	$FF,0-$0E*(SPACING/2)+(320/2),$00,$48,$00
 	dc.b	'DO YOU WANT TO'
-	dc.b	$FF,0-$09*SPACING/2+320/2,$00,$58,$00
+	dc.b	$FF,0-$09*(SPACING/2)+(320/2),$00,$58,$00
 	dc.b	'CONTINUE?'
-	dc.b	$FF,0-$02*SPACING/2+320/2,$00,$78,$00
+	dc.b	$FF,0-$02*(SPACING/2)+(320/2),$00,$78,$00
 CONTDIGITS	equ	(*-CONTINUETEXT)
 	dc.b	'10'
-	dc.b	$FF,0-$09*SPACING/2+4+320/2,$00,$98,$00
+	dc.b	$FF,0-$09*(SPACING/2)+4+(320/2),$00,$98,$00
 YESCOL	equ	(*+1-CONTINUETEXT)
  	dc.b	$FE,ALPHABET		; OAM0 HIGH
 	dc.b	'YES      '
-	dc.b	$FF,0-$03*SPACING/2+320/2,$00,$98,$00
+	dc.b	$FF,0-$03*(SPACING/2)+(320/2),$00,$98,$00
 NOCOL	equ	(*+1-CONTINUETEXT)
  	dc.b	$FE,ALPHABET	      	; OAM0 HIGH
 	dc.b	'   NO',0

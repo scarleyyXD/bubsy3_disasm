@@ -166,7 +166,7 @@ MAP_1ALTER	equ	*+2
 	bra	blit_line_across
 centre_right:
 	lea	BLOCK_HEIGHT*(PLAYFIELD_WIDTH-1)(a2),a2
-	lea	(2*PLAYFIELD_WIDTH)-2(a6),a6
+	lea	2*PLAYFIELD_WIDTH-2(a6),a6
 centre_left:
 blit_line_down:
 	move.l	#SRCEN|UPDA1|LFU_A|LFU_AN,d0
@@ -387,7 +387,7 @@ MAP_3ALTER	equ	*+2
 	bra	blit_line_across1
 centre_right1:
 	lea	BLOCK_HEIGHT*(PLAYFIELD_WIDTH-1)(a2),a2
-	lea	(2*PLAYFIELD_WIDTH)-2(a6),a6
+	lea	2*PLAYFIELD_WIDTH-2(a6),a6
 centre_left1:
 blit_line_down1:
 	move.l	#SRCEN|UPDA1|LFU_A|LFU_AN,d0

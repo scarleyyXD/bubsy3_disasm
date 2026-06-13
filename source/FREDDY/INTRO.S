@@ -311,7 +311,7 @@ init_exclam:
 	bsr	no_objects
 	move.l	bubsy_pal_pointer(a4),a0
 	bsr	load_full_marv_palette
-	move.w	#$77fe,(CLUT+(111*2))-BASE(a5)
+	move.w	#$77fe,CLUT+(111*2)-BASE(a5)
 
 	clr.w	star_angle_add(a4)
 	clr.w	star_angle_dec(a4)
@@ -746,10 +746,10 @@ setup_hi_screen:
 	move.l	#WID112+PIXEL8,d3	
 	move.l	#WID320+PIXEL8,d4	
 	move.l	intro_hed_pointer(a4),a0
-	move.l	(10*jsprite_e)+jsprite_paramsixel_width(a0),d5
+	move.l	10*jsprite_e+jsprite_paramsixel_width(a0),d5
 	move.w	intro_counter2(a4),d6
 	mulu	#15,d6
-	move.l	(10*16)+jsprite_data(a0),a0
+	move.l	10*16+jsprite_data(a0),a0
 	move.l	hi_screen_pointer(a4),a1	
 	bsr	blitter_rotate_bitmap
 
@@ -1265,7 +1265,7 @@ hi_score_stuff:
 	swap	d0
 
 	move.l	intro_hed_pointer(a4),a0
-	lea	15*jsprite_e(a0),a0
+	lea	(15*jsprite_e)(a0),a0
 	lsl.w	#4,d1
 
 	lsl.w	#4,d2
@@ -2135,7 +2135,7 @@ blit_circle:
 
 ; setup the source
 	move.l	intro_hed_pointer(a4),a6
-	lea	9*jsprite_e(a6),a6
+	lea	(9*jsprite_e)(a6),a6
 
 	move.l	jsprite_data(a6),A2_BASE-BASE(a5)
 	move.l	#PITCH1|PIXEL1|WID64|XADDPIX,A2_FLAGS-BASE(a5)
