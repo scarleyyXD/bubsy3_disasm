@@ -7,8 +7,8 @@ Original hash (64-bit FNV-1a): 5C0C7827948F0F27 (binary matching currently not o
 You can find the original source code on this GitHub, or find it here: https://forums.atariage.com/topic/224770-the-atari-jaguar-source-code-thread/#findComment-3693564
 
 Known issues with the source currently:
-* EEPROM/savedata fails to read/write properly (crashes)
-* Title screen, credits, and hi-score menu don't display
+* ~~EEPROM/savedata fails to read/write properly (crashes)~~
+* Title screen, credits, and hi-score menu display incorrectly
 * ~~Level scroll routines are currently messed up~~
 * ~~Sound effects are not enabled by default (see EEPROM issue)~~
 * Not all entities are scripted/mapped correctly

@@ -27,8 +27,8 @@ TITLE:
 	andi.b	#~DEMOMODE,EDITFLAGS			;init to demo off
 
 	move.b	#2,NMIVECSEL				;title loop
-
-.ok1:	
+	
+.ok1:
 	lea	TITLE_PIC_NAME,a0
 	move.l	load_title_pic_here,a1
 	jsr	file_load

@@ -1,119 +1,142 @@
-ivectors				equ 0
-video_service			equ 0
-gpu_service				equ 4
-object_service			equ 8
-timer_service			equ 12
-jerry_service			equ 16
-screen_height_long		equ 20
-scree_height_fred		equ 22
-color_ptr				equ 24
+.macro	_rsset
+	rs_counter	set	\1
+	.endm
 
-clearr					equ 28
-memory_used				equ 92
-min_memory				equ 96
+.macro	_rsreset
+	_rsset 0
+	.endm
+	
+.macro	_rsb	label,volume
+	\label		set	rs_counter
+	rs_counter	set	rs_counter+((\volume)*1)
+	.endm
 
-current_list_pointer	equ 100
-backup_list_pointer		equ 108
-object_list_pointer		equ 116
-bytes_in_object_list	equ 124
-made_object_list		equ 128
-vbl_counter				equ 129
+.macro	_rsw	label,volume
+	\label		set	rs_counter
+	rs_counter	set	rs_counter+((\volume)*2)
+	.endm
+	
+.macro	_rsl	label,volume
+	\label		set	rs_counter
+	rs_counter	set	rs_counter+((\volume)*4)
+	.endm
 
-star_off				equ (12*NUM_STARS)
-screen_off				equ (4*NUM_SCREENS)
-star_screen				equ	(star_off+screen_off)
+	_rsreset
 
-star_table				equ 132
-star_ball_pointer		equ 132+star_off
-credit_screen_pointer	equ 136+star_off
-hi_screen_pointer		equ 136+star_off
-star_screen_pointers	equ 136+star_off
-star_restore_pointer	equ 144+star_off
-letter_y_table			equ 152+star_off
+	_rsl	ivectors,0
+	_rsl	video_service,1
+	_rsl	gpu_service,1
+	_rsl	object_service,1
+	_rsl	timer_service,1
+	_rsl	jerry_service,1
+	_rsw	screen_height_long,1
+	_rsw	scree_height_fred,1
+	_rsl	color_ptr,1
 
-en_xdir					equ 264+star_off
-en_ydir					equ 265+star_off
-en_x					equ 266+star_off
-en_y					equ 268+star_off
-en_xdir2				equ 270+star_off
-en_ydir2				equ 271+star_off
-en_x2					equ 272+star_off
-en_y2					equ 274+star_off
-sine_pointer			equ 276+star_off
-half_circle_pointer		equ 280+star_off
+	_rsl	clearr,16
+	_rsl	memory_used,1
+	_rsl	min_memory,1
 
-fred_mod_load_addr		equ 284+star_off
-intro_fst_pointer		equ 288+star_off
-intro_hed_pointer		equ 292+star_off
-font1_fst_pointer		equ 296+star_off
-font1_hed_pointer		equ 300+star_off
+	_rsl	current_list_pointer,2
+	_rsl	backup_list_pointer,2
+	_rsl	object_list_pointer,2
+	_rsw	bytes_in_object_list,2
+	_rsb	made_object_list,1
+	_rsb	vbl_counter,1
 
-intro_gfx_pointer		equ 304+star_off
-font1_gfx_pointer		equ 308+star_off
-title_gfx_pointer		equ 312+star_off
-title_pal_pointer		equ 316+star_off
-title_rgb_pointer		equ 320+star_off
-waterfon_pal_pointer	equ 324+star_off
-logo_hed_pointer		equ 328+star_off
-logo_gfx_pointer		equ 332+star_off
-atari_pal_pointer		equ 336+star_off
-idi_pal_pointer			equ 340+star_off
+	_rsset	((rs_counter+2)&(~1))
 
-rmw_data				equ 344+star_off
-rmw_data2				equ 348+star_off
-mag_pointer				equ 352+star_off
-temp_pal_pointer		equ 356+star_off
-border_setting			equ 360+star_off
-background_setting		equ 362+star_off
-ex_scale				equ 366+star_off
-bubsy_action			equ 368+star_off
-exclamation_action		equ 368+star_off
-bubsy_yoff				equ 370+star_off
+	_rsb	star_table,12*NUM_STARS
+	_rsl	star_ball_pointer,1
+	_rsl	credit_screen_pointer,0
+	_rsl	hi_screen_pointer,0
+	_rsl	star_screen_pointers,2
+	_rsl	star_restore_pointer,2
+	_rsb	letter_y_table,16*7
 
-original_screen_pointer	equ 372+star_off
-screen_pointers			equ 376+star_off
-text_buffer_pointer		equ 380+star_screen
-circle_screen_pointers	equ 380+star_screen
-hi_out_delay			equ 388+star_screen
+	_rsb	en_xdir,1
+	_rsb	en_ydir,1
+	_rsw	en_x,1
+	_rsw	en_y,1
+	_rsb	en_xdir2,1
+	_rsb	en_ydir2,1
+	_rsw	en_x2,1
+	_rsw	en_y2,1
+	_rsl	sine_pointer,1
+	_rsl	half_circle_pointer,1
 
-fuck_text_len			equ 390+star_screen
-start_text_len			equ 390+star_screen
-circle_prev				equ 390+star_screen
-circle_radius			equ 394+star_screen
-circle_angle			equ 396+star_screen
-intro_counter			equ 398+star_screen
-random_number			equ 400+star_screen
+	_rsl	fred_mod_load_addr,1
+	_rsl	intro_fst_pointer,1
+	_rsl	intro_hed_pointer,1
+	_rsl	font1_fst_pointer,1
+	_rsl	font1_hed_pointer,1
 
-cursor_pos				equ 402+star_screen
-score_achieved			equ 404+star_screen
-score_position			equ 408+star_screen
+	_rsl	intro_gfx_pointer,1
+	_rsl	font1_gfx_pointer,1
+	_rsl	title_gfx_pointer,1
+	_rsl	title_pal_pointer,1
+	_rsl	title_rgb_pointer,1
+	_rsl	waterfon_pal_pointer,1
+	_rsl	logo_hed_pointer,1
+	_rsl	logo_gfx_pointer,1
+	_rsl	atari_pal_pointer,1
+	_rsl	idi_pal_pointer,1
 
-bubsy_pal_pointer		equ 410+star_screen
-star_pal_pointer		equ 414+star_screen
-credit_text_pointer		equ 418+star_screen
-credit_text_offset		equ 422+star_screen
-credit_screen_offset	equ 424+star_screen
-hi_off					equ 426+star_screen
-intro_counter2			equ 428+star_screen
-current_star_angle		equ 430+star_screen
-star_angle_add			equ 432+star_screen
-star_angle_dec			equ 434+star_screen
-star_angle_pointer		equ 436+star_screen
+	_rsl	rmw_data,1
+	_rsl	rmw_data2,1
+	_rsl	mag_pointer,1
+	_rsl	temp_pal_pointer,1
+	_rsw	border_setting,1
+	_rsl	background_setting,1
+	_rsw	ex_scale,1
+	_rsw	bubsy_action,0
+	_rsw	exclamation_action,1
+	_rsw	bubsy_yoff,1
 
-bubsy_log				equ 440+star_screen
-fractured				equ 442+star_screen
-fred_hi_mod_load_addr	equ 444+star_screen
+	_rsl	original_screen_pointer,1
+	_rsl	screen_pointers,NUM_SCREENS+1
+	_rsl	text_buffer_pointer,0
+	_rsl	circle_screen_pointers,2
 
-star_off_table			equ 448+star_screen
-hi_dir					equ 450+star_screen
-credit_text_done		equ 451+star_screen
-reguler_pal				equ 452+star_screen
-title_faded				equ 453+star_screen
-exit_ex					equ 454+star_screen
-hi_mod_started			equ 455+star_screen
-star_counter			equ 456+star_screen
-no_exit					equ 457+star_screen
-title_pic_being_displayed	equ 458+star_screen
-set_pals				equ 459+star_screen
-dont_load_mod			equ 460+star_screen
-varend					equ 461+star_screen
+	_rsw	hi_out_delay,1
+	_rsw	fuck_text_len,0
+	_rsw	start_text_len,0
+	_rsw	circle_prev,2
+	_rsw	circle_radius,1
+	_rsw	circle_angle,1
+	_rsw	intro_counter,1
+	_rsw	random_number,1
+
+	_rsw	cursor_pos,1
+	_rsl	score_achieved,1
+	_rsw	score_position,1
+
+	_rsl	bubsy_pal_pointer,1
+	_rsl	star_pal_pointer,1
+	_rsl	credit_text_pointer,1
+	_rsw	credit_text_offset,1
+	_rsw	credit_screen_offset,1
+	_rsw	hi_off,1
+	_rsw	intro_counter2,1
+	_rsw	current_star_angle,1
+	_rsw	star_angle_add,1
+	_rsw	star_angle_dec,1
+	_rsl	star_angle_pointer,1
+
+	_rsw	bubsy_log,1
+	_rsw	fractured,1
+	_rsl	fred_hi_mod_load_addr,1
+	
+	_rsw	star_off_table,1
+	_rsb	hi_dir,1
+	_rsb	credit_text_done,1
+	_rsb	reguler_pal,1
+	_rsb	title_faded,1
+	_rsb	exit_ex,1
+	_rsb	hi_mod_started,1
+	_rsb	star_counter,1
+	_rsb	no_exit,1
+	_rsb	title_pic_being_displayed,1
+	_rsb	set_pals,1
+	_rsb	dont_load_mod,1
+	_rsw	varend,1

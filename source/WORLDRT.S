@@ -73,7 +73,7 @@ new_palette:	incbin	"specific.jag/bubtask.cpl"
 		include	"freddy/main.s"
 
 		.data
-		
+
 		include	"bubpal0.s"
 		include	"level01.s"
 		

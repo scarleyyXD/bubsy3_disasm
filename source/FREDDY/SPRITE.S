@@ -1,19 +1,22 @@
-sprite_x				equ	0
-sprite_y				equ	2
-sprite_z				equ	4
-sprite_number			equ	6
-sprite_group			equ	8
-sprite_e				equ	10
+	_rsreset
+	_rsw	sprite_x,1
+	_rsw	sprite_y,1
+	_rsw	sprite_z,1
+	_rsw	sprite_number,1
+	_rsw	sprite_group,1
+	_rsw	sprite_e,0
 
-jsprite_data			equ	0	; graphic data
-jsprite_paramsixel_width		equ	4   ; width in pixels
-jsprite_height			equ	6	; height in pixels
-jsprite_bitsperpixel	equ	8	; bits per pixel
-jsprite_flags			equ	9	; flags
-jsprite_yoffset			equ	10	; blank pixels at top
-jsprite_paramsalindex		equ	12	; palette index
-jsprite_paramshrase_width	equ	14
-jsprite_e				equ	16
+	_rsreset
+	_rsl	jsprite_data,1			; graphic data
+	_rsw	jsprite_pixel_width,1	; width in pixels
+	_rsw	jsprite_height,1		; height in pixels
+	_rsb	jsprite_bitsperpixel,1	; bits per pixel
+	_rsb	jsprite_flags,1			; flags
+	_rsw	jsprite_yoffset,1		; blank pixels at top
+	_rsw	jsprite_palindex,1		; palette index
+	_rsw	jsprite_phrase_width,1
+
+	_rsw	jsprite_e,0
 
 ; calculates data widths in phrases for an array of sprites
 ; pass
@@ -25,14 +28,14 @@ format_jag_sprites:
 	move.l	a1,d6
 .loop:
 	add.l	d6,jsprite_data(a0)
-	move.w	jsprite_paramsixel_width(a0),d2
+	move.w	jsprite_pixel_width(a0),d2
 	moveq	#6,d1
 	sub.b	jsprite_bitsperpixel(a0),d1
 	lsr.w	d1,d2
-	move.w	d2,jsprite_paramshrase_width(a0)
-	move.w	jsprite_paramsalindex(a0),d3
+	move.w	d2,jsprite_phrase_width(a0)
+	move.w	jsprite_palindex(a0),d3
 	lsr.w	#1,d3
-	move.w	d3,jsprite_paramsalindex(a0)
+	move.w	d3,jsprite_palindex(a0)
 	lea	jsprite_e(a0),a0
 	sub.w	#16,d0
 	bne.s	.loop
@@ -107,7 +110,7 @@ draw_a_fast_jag_sprite:
 	or.l	d0,d3
 	move.l	jsprite_data(a2,d6),d0
 	neg.w	d1
-	mulu	jsprite_paramshrase_width(a2,d6),d1
+	mulu	jsprite_phrase_width(a2,d6),d1
 	lsl.l	#3,d1
 	add.l	d1,d0
 	and.l	#%11111111111,d2
@@ -204,7 +207,7 @@ get_scaled_jsprite_info:
 	sub.w	d1,obj_height(a0)
 	bmi.s	.no_sprite
 	move.l	jsprite_data(a2),obj_data(a0)
-	mulu	jsprite_paramshrase_width(a2),d1
+	mulu	jsprite_phrase_width(a2),d1
 	lsl.l	#3,d1
 	add.l	d1,obj_data(a0)
 	bra.s	.skip_y_calc
@@ -221,9 +224,9 @@ get_scaled_jsprite_info:
 	move.b	jsprite_bitsperpixel(a2),d1
 	move.w	d1,obj_depth(a0)
 	move.w	#1,obj_pitch(a0)
-	move.w	jsprite_paramshrase_width(a2),obj_iwidth(a0)	; in phrases!
-	move.w	jsprite_paramshrase_width(a2),obj_dwidth(a0)	; in phrases!
-	move.w	jsprite_paramsalindex(a2),obj_index(a0)
+	move.w	jsprite_phrase_width(a2),obj_iwidth(a0)	; in phrases!
+	move.w	jsprite_phrase_width(a2),obj_dwidth(a0)	; in phrases!
+	move.w	jsprite_palindex(a2),obj_index(a0)
 	move.w	#TRANS,obj_flags(a0)
 	move.w	#0,obj_firstpix(a0)
 	moveq	#-1,d0
@@ -243,7 +246,7 @@ get_jsprite_info:
 	sub.w	d1,obj_height(a0)
 	bmi.s	.no_sprite
 	move.l	jsprite_data(a2),obj_data(a0)
-	mulu	jsprite_paramshrase_width(a2),d1
+	mulu	jsprite_phrase_width(a2),d1
 	lsl.l	#3,d1
 	add.l	d1,obj_data(a0)
 	bra.s	.skip_y_calc
@@ -260,9 +263,9 @@ get_jsprite_info:
 	move.b	jsprite_bitsperpixel(a2),d1
 	move.w	d1,obj_depth(a0)
 	move.w	#1,obj_pitch(a0)
-	move.w	jsprite_paramshrase_width(a2),obj_iwidth(a0)	; in phrases!
-	move.w	jsprite_paramshrase_width(a2),obj_dwidth(a0)	; in phrases!
-	move.w	jsprite_paramsalindex(a2),obj_index(a0)
+	move.w	jsprite_phrase_width(a2),obj_iwidth(a0)	; in phrases!
+	move.w	jsprite_phrase_width(a2),obj_dwidth(a0)	; in phrases!
+	move.w	jsprite_palindex(a2),obj_index(a0)
 	move.w	#TRANS,obj_flags(a0)
 	move.w	#0,obj_firstpix(a0)
 	moveq	#-1,d0

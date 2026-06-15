@@ -12,22 +12,25 @@ NTSC	equ	1
 	.68000
 	.data
 
-sprite_x		equ	0
-sprite_y		equ	2
-sprite_z		equ	4
-sprite_number	equ	6
-sprite_group	equ	8
-sprite_e		equ	10
+	_rsreset
+	_rsw	sprite_x,1
+	_rsw	sprite_y,1
+	_rsw	sprite_z,1
+	_rsw	sprite_number,1
+	_rsw	sprite_group,1
+	_rsw	sprite_e,0
 
-jsprite_data			equ	0	; graphic data
-jsprite_paramsixel_width		equ	4	; width in pixels
-jsprite_height			equ	6	; height in pixels
-jsprite_bitsperpixel	equ	8	; bits per pixel
-jsprite_flaos			equ	9	; flags
-jsprite_yoffset			equ	10	; blank pixels at top
-jsprite_paramsalindex		equ	12	; palette index
-jsprite_paramshrase_width	equ	14
-jsprite_e				equ	16
+	_rsreset
+	_rsl	jsprite_data,1			; graphic data
+	_rsw	jsprite_pixel_width,1	; width in pixels
+	_rsw	jsprite_height,1		; height in pixels
+	_rsb	jsprite_bitsperpixel,1	; bits per pixel
+	_rsb	jsprite_flags,1			; flags
+	_rsw	jsprite_yoffset,1		; blank pixels at top
+	_rsw	jsprite_palindex,1		; palette index
+	_rsw	jsprite_phrase_width,1
+
+	_rsw	jsprite_e,0
 
 	.globl	fasta_gpu_sprite_draw_prog
 	.globl	fastb_gpu_sprite_draw
@@ -557,10 +560,10 @@ fast_gpu_sprite_loop:
 	or	RD0,RD3
 	neg	RD1
 	load	(RA2),RD0
-	addq	#jsprite_paramshrase_width,RA2
+	addq	#jsprite_phrase_width,RA2
 	loadw	(RA2),IMMID
 	imult	IMMID,RD1
-	subq	#jsprite_paramshrase_width,RA2
+	subq	#jsprite_phrase_width,RA2
 	shlq	#3,RD1
 	and	GAND3,RD2
 	add	RD1,RD0

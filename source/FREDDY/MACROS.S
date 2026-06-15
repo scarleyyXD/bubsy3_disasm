@@ -3,6 +3,6 @@
 	bne.w	\1
 	.endm
 .macro	LOADREG
-	lea	video_branches,a4
+	lea	data,a4
 	lea	BASE,a5
 	.endm

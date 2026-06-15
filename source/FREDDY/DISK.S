@@ -1,106 +1,106 @@
-.macro	SUBTRACT_MEMORY val
-	sub.l	#\val,memory_used(a4)
+.macro	SUBTRACT_MEMORY
+	sub.l	#\1,memory_used(a4)
 	.endm
 
-.macro	ADD_MEMORY val
-	add.l	#\val,memory_used(a4)
+.macro	ADD_MEMORY
+	add.l	#\1,memory_used(a4)
 	.endm
 
-.macro	STANDARD_LOAD file,ptr
-	lea	\file,a0
+.macro	STANDARD_LOAD
+	lea	\1,a0
 	bsr	load_in_file_from_rom_fred
-	move.l	a0,\ptr
+	move.l	a0,\2
 	.endm
 
-.macro	LOAD_AND_FIX_SPRITES f1,p1,f2,p2
-	STANDARD_LOAD \f2,\p2
-	STANDARD_LOAD \f1,\p1
-	move.l	\p1,a0
-	move.l	\p2,a1
-	clr.w	jsprite_paramsalindex(a0)
-	clr.w	jsprite_paramsalindex+16(a0)
+.macro	LOAD_AND_FIX_SPRITES
+	STANDARD_LOAD \3,\4
+	STANDARD_LOAD \1,\2
+	move.l	\2,a0
+	move.l	\4,a1
+	clr.w	jsprite_palindex(a0)
+	clr.w	jsprite_palindex+16(a0)
 	bsr	format_jag_sprites
 	.endm	
 
-.macro	LOAD_AND_FIX_FAST_SPRITES f1,p1,f2,p2,fast_ptr
-	STANDARD_LOAD \f2,\p2
-	STANDARD_LOAD \f1,\p1
-	move.l	\p1,a0
-	move.l	\p2,a1
-	clr.w	jsprite_paramsalindex(a0)
-	clr.w	jsprite_paramsalindex+16(a0)
+.macro	LOAD_AND_FIX_FAST_SPRITES
+	STANDARD_LOAD \3,\4
+	STANDARD_LOAD \1,\2
+	move.l	\2,a0
+	move.l	\4,a1
+	clr.w	jsprite_palindex(a0)
+	clr.w	jsprite_palindex+16(a0)
 	move.l	d0,-(sp)
 	bsr	format_jag_sprites
 	move.l	(sp)+,d0
 	bsr	allocate_memory
 	move.l	a0,a1
-	move.l	a1,\fast_ptr
-	move.l	\p1,a0
+	move.l	a1,\5
+	move.l	\2,a0
 	bsr	generate_fast_sprites
-	endm	
+	.endm	
 
-.macro	LOAD_AND_FIX_MAP file,ptr
-	STANDARD_LOAD \file,\ptr
-	move.l	\ptr,a0
+.macro	LOAD_AND_FIX_MAP
+	STANDARD_LOAD \1,\2
+	move.l	\2,a0
 	bsr	fix_map
 	.endm
 
-.macro	LOAD_AND_FIX_APL file,ptr,obj,pal	;	aplname,aplpointer,objpointer,palpointer
-	STANDARD_LOAD \file,\ptr
+.macro	LOAD_AND_FIX_APL	;	aplname,aplpointer,objpointer,palpointer
+	STANDARD_LOAD \1,\2
 	
-	if \pal=4
+	if \4=4
 	move.l	d0,-(sp)
 	SUBTRACT_MEMORY $400
 	move.l	#512,d0
 	bsr	allocate_memory
-	move.l	a0,\pal
+	move.l	a0,\4
 	move.l	a0,a1
-	move.l	\ptr,a0
+	move.l	\2,a0
 	bsr	conert_apl_palette
 	move.l	(sp)+,d0
 	ADD_MEMORY $400
 	endif
 	
-	move.l	\ptr,a1
+	move.l	\2,a1
 	lea	$400(a1),a0
 	sub.l	#$400,d0
 	bsr	copy_bytes	
 	SUBTRACT_MEMORY $400
 	
-	if \pal=3
+	if \4=3
 	moveq	#16,d0
 	bsr	allocate_memory
-	move.l	a0,\obj
+	move.l	a0,\3
 	moveq	#STANDARD_BLOCKDIM,d1
 	move.l	a0,a1
-	move.l	\ptr,a2
+	move.l	\2,a2
 	moveq	#OPIXEL8,d0
 	bsr	make_attribute_block
 	bsr	strip_data
 	endif
 	.endm
 
-.macro	LOAD_APL_TO_OBJ file,ptr,obj
-	STANDARD_LOAD \file,\ptr
+.macro	LOAD_APL_TO_OBJ
+	STANDARD_LOAD \1,\2
 	moveq	#16,d0
 	bsr	allocate_memory
-	move.l	a0,\obj
+	move.l	a0,\3
 	moveq	#STANDARD_BLOCKDIM,d1
 	move.l	a0,a1
-	move.l	\obj,a2
+	move.l	\3,a2
 	moveq	#OPIXEL8,d0
 	bsr	make_attribute_block
 	bsr	strip_data
 	.endm
 
-.macro	LOAD_APL_TO_OBJ4BITS file,ptr,obj
-	STANDARD_LOAD \file,\ptr
+.macro	LOAD_APL_TO_OBJ4BITS
+	STANDARD_LOAD \1,\2
 	moveq	#16,d0
 	bsr	allocate_memory
-	move.l	a0,\obj
+	move.l	a0,\3
 	moveq	#STANDARD_BLOCKDIM,d1
 	move.l	a0,a1
-	move.l	\ptr,a2
+	move.l	\2,a2
 	moveq	#OPIXEL4,d0
 	bsr	make_attribute_block
 	bsr	strip_data

@@ -184,7 +184,6 @@ loc_29B52:
 	movem.l	(sp)+,d0-d1/d7-a4
 	rts
 
-do_sound:		; pseudo-label
 sub_29B58:
 	movem.l d0-d7/a2-a6,-(sp)
 	lea	dword_2B5DE(pc),a2
@@ -322,7 +321,7 @@ loc_29CC8:
 	movem.l (sp)+,d1-d2/a0-a1
 	rts
 
-NOFADE:		; might be this?
+NOFADE:
 	movem.l d0/a0,-(sp)
 	lea	dword_2B5DE(pc),a0
 	move.l  $1E(a0),d0
@@ -367,6 +366,12 @@ STOP_MOD:
 	lea	$28(a4),a3
 	movea.l	#D_RAM+$800,a4
 	moveq	#3,d7
+
+;	lea	sample,a0
+;	move.l	#length,d0
+;	moveq	#1,d1 ;priority
+;	move.w	#$3fff,d2 ;pan value
+;	jsr	PLAYFX
 
 PLAYFX:
 	move.l	#-4,(a4)
@@ -436,7 +441,7 @@ HALTDSP:
 	jsr	DISABLETIMER
 loc_29E24:
 	not.l	d0
-	move.l	d0,(D_RAM+$34C).l
+	move.l	d0,D_RAM+$34C
 	movem.l	(sp)+,d0/d7/a1/a4
 	rts
 
@@ -445,7 +450,7 @@ RESUMEDSP:
 	lea	dword_2B5DE(pc),a1
 	moveq	#0,d7
 	not.l	d7
-	move.l	d7,(D_RAM+$34C).l
+	move.l	d7,D_RAM+$34C
 	tst.b	$27(a1)
 	beq.s	loc_29E50
 	jsr	ENABLETIMER
@@ -460,7 +465,7 @@ init_mod:
 	bsr.w   sub_29F50
 	rts
 
-; a0 = mod file ?
+;a0 = address in memory where the mod is
 init_mod_setting:
 	lea	byte_2A7F6(pc),a5
 	move.l	a0,$10(a5)	; store the MOD address at $35FC0 !!

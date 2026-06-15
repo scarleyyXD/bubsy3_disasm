@@ -567,9 +567,9 @@ init_hi_score:
 	lea	(a0,d6),a0
 	lsl.w	#4,d1
 	move.w	jsprite_height(a3,d1),d7	
-	move.w	jsprite_paramshrase_width(a3,d1),d3
+	move.w	jsprite_phrase_width(a3,d1),d3
 	lsl.w	#3,d3
-	move.w	jsprite_paramsixel_width(a3,d1),d6	
+	move.w	jsprite_pixel_width(a3,d1),d6	
 	move.l	jsprite_data(a3,d1),a2
 	subq.w	#1,d7
 	subq.w	#1,d6
@@ -746,7 +746,7 @@ setup_hi_screen:
 	move.l	#WID112+PIXEL8,d3	
 	move.l	#WID320+PIXEL8,d4	
 	move.l	intro_hed_pointer(a4),a0
-	move.l	10*jsprite_e+jsprite_paramsixel_width(a0),d5
+	move.l	10*jsprite_e+jsprite_pixel_width(a0),d5
 	move.w	intro_counter2(a4),d6
 	mulu	#15,d6
 	move.l	10*16+jsprite_data(a0),a0
@@ -1040,7 +1040,7 @@ set_logo_col:
 	move.w	d2,d3
 	lsl.w	#4,d3
  	move.w	jsprite_height(a0,d3),d7
-	move.w	jsprite_paramsixel_width(a0,d3),d6
+	move.w	jsprite_pixel_width(a0,d3),d6
 	asr.w	#1,d6
 	asr.w	#1,d7
 	move.w	#SCREEN_WIDTH/2,d0
@@ -1265,7 +1265,7 @@ hi_score_stuff:
 	swap	d0
 
 	move.l	intro_hed_pointer(a4),a0
-	lea	(15*jsprite_e)(a0),a0
+	lea	15*jsprite_e(a0),a0
 	lsl.w	#4,d1
 
 	lsl.w	#4,d2
@@ -1592,7 +1592,7 @@ print_en:
 .skipo:
 	lsl.w	#4,d1	
 	move.l	jsprite_data(a3,d1),a5
-	move.w	jsprite_paramshrase_width(a3,d1),d7
+	move.w	jsprite_phrase_width(a3,d1),d7
 	move.w	d7,d1
 	lsl.w	#3,d7
 	mulu	credit_text_offset(a4),d7
@@ -2135,20 +2135,20 @@ blit_circle:
 
 ; setup the source
 	move.l	intro_hed_pointer(a4),a6
-	lea	(9*jsprite_e)(a6),a6
+	lea	9*jsprite_e(a6),a6
 
 	move.l	jsprite_data(a6),A2_BASE-BASE(a5)
 	move.l	#PITCH1|PIXEL1|WID64|XADDPIX,A2_FLAGS-BASE(a5)
 	move.l	#0,A2_PIXEL-BASE(a5)
-	move.l	#2*65536-64,A2_STEP-BASE(a5)
+	move.l	#2*(65536-64),A2_STEP-BASE(a5)
 	
 	move.l	circle_screen_pointers(a4),A1_BASE-BASE(a5)
 	move.l	#PITCH1|PIXEL1|WID384|XADDPIX,A1_FLAGS-BASE(a5)
-	move.l	#384*65536+384,A1_CLIP-BASE(a5)
+	move.l	#384*(65536+384),A1_CLIP-BASE(a5)
 	move.l	(sp)+,A1_PIXEL-BASE(a5)		
-	move.l	#2*65536-64,A1_STEP-BASE(a5)
+	move.l	#2*(65536-64),A1_STEP-BASE(a5)
 	
-	move.l	#64*65536+64,B_COUNT-BASE(a5)
+	move.l	#64*(65536+64),B_COUNT-BASE(a5)
 	move.l	#SRCEN|DSTEN|CLIP_A1|UPDA1|UPDA2|LFU_SORD,B_CMD-BASE(a5)
 	rts
 	endif
@@ -2192,7 +2192,7 @@ flash_start:
 	rts
 
 draw_start:
-	if	ONLY_OPTIONS
+	if	!ONLY_OPTIONS
 	moveq	#16,d0                 
 	move.l	current_list_pointer(a4),a1
 	bsr	fix_object_boundry
@@ -2390,7 +2390,8 @@ clear_intro_screen:
 
 setup_screen_objects:
 	if	STRIP=FALSE
-star_dest	equ	-500
+	_rsset	-500
+star_dest	rs.b	0
 num_stars	equ	0
 	link	a6,#star_dest
 
@@ -2549,7 +2550,7 @@ make_screen_object:
 	cmp.w	#OPIXEL4,(sp)+
 	beq.s	.pixel4
 	move.w	#(BLITTER_WINDOW/64)*8,obj_dwidth(a0)
-	move.w	#(SCREEN_WIDTH/64)*8+1,obj_iwidth(a0)
+	move.w	#((SCREEN_WIDTH/64)*8)+1,obj_iwidth(a0)
 	move.w	#TRANS,obj_flags(a0)
 .pixel4:
 	move.w	#0,obj_firstpix(a0)
@@ -2581,8 +2582,8 @@ set_full_pal:
 
 fade_down_to_reguler_pal:
 
-PAL_SIZE	equ (NUM_EX_COLS+1)*2
-reg_pal		equ -PAL_SIZE
+	_rsset	-(NUM_EX_COLS+1)*2
+	_rsb	reg_pal,(NUM_EX_COLS+1)*2
 
 	tst.b	reguler_pal(a4)
 	bne	.done
@@ -2682,15 +2683,17 @@ bigexclamation_stuff:
 	st	exit_ex(a4)
 	rts
 
-fade_to_white	equ (NUM_EX_COLS+1)*2
-white_pal		equ -fade_to_white
+fade_to_white:
+	_rsset	-(NUM_EX_COLS+1)*2
+	_rsb	white_pal,(NUM_EX_COLS+1)*2
 
 	bsr	print_exclamation
 	addq.w	#2,ex_scale(a4)
 	cmp.w	#$9c,ex_scale(a4)
 	blt.s	.no_inc
 	addq.w	#1,exclamation_action(a4)
-.no_inc:	moveq	#0,d0
+.no_inc:
+	moveq	#0,d0
 	move.w	intro_counter(a4),d0
 	lsl.b	#4,d0
 
@@ -2699,7 +2702,8 @@ white_pal		equ -fade_to_white
 	lea	white_pal(a6),a1
 	move.w	(a0)+,(a1)+
 	move.w	#NUM_EX_COLS-1,d1
-.loop:	move.w	(a0)+,d2
+.loop:
+	move.w	(a0)+,d2
 	lsr.w	#1,d2
 	move.w	d2,d3
 	move.w	d3,d4
@@ -2775,16 +2779,20 @@ expand_exclamation:
 	blt.s	.no_inc
 	addq.w	#1,exclamation_action(a4)
 	clr.w	intro_counter(a4)
-.no_inc:	rts
+.no_inc:
+	rts
 
-ex_delay:	bsr	print_exclamation
+ex_delay:
+	bsr	print_exclamation
 	cmp.w	#130,intro_counter(a4)
 	bne.s	.no_inc
 	addq.w	#1,exclamation_action(a4)
-.no_inc:	rts
+.no_inc:
+	rts
 
-fade_up_ex	equ (NUM_EX_COLS+1)*2
-faded_pal	equ -fade_up_ex
+fade_up_ex:
+	_rsset	-(NUM_EX_COLS+1)*2
+	_rsb	faded_pal,(NUM_EX_COLS+1)*2
 
 	link	a6,#faded_pal
 
@@ -2869,7 +2877,7 @@ print_scaled_sprite:
 	move.w	d4,d1
 	move.w	d3,d4
 	move.w	d3,d5
-	muls	jsprite_paramsixel_width(a0),d4	
+	muls	jsprite_pixel_width(a0),d4	
 	muls	jsprite_height(a0),d5
 	asr.w	#6,d4		
 	asr.w	#6,d5		
@@ -2916,8 +2924,8 @@ allocate_and_load_stuff:
 	STANDARD_LOAD bubsy_pal_name,bubsy_pal_pointer(a4)
 
 	move.l	intro_hed_pointer(a4),a0
-	clr.w	jsprite_paramsalindex(a0)
-	clr.w	jsprite_paramsalindex+16(a0)
+	clr.w	jsprite_palindex(a0)
+	clr.w	jsprite_palindex+16(a0)
 
 	move.l	#64*64*2,d0
 	bsr	allocate_memory
@@ -3126,11 +3134,11 @@ trev_gpu:
 	jsr	SETUPGPU
 	rts
 
-; TODO: look as to why this crashes
 write_hi_score_to_eprom:
-	rts	; crashes
+	rts	;disable for now...
 
-hi_conv_buffer		equ	128
+	_rsset	-128
+	_rsb	hi_conv_buffer,128
 
 	movem.l	d0-a6,-(sp)
 	link	a6,#hi_conv_buffer

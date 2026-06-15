@@ -122,7 +122,7 @@ standard_video:
 	move.l	object_list_pointer(a4),obj_link(a0)
 	lea	video_branches+(3*8),a1
 	bsr	make_object
-	UNSTACKOBJ	
+	UNSTACKOBJ
 	move.l	object_list_pointer(a4),a0
 	move.l	backup_list_pointer(a4),a1
 	moveq	#0,d0

@@ -4,12 +4,10 @@
 ;  6  6	 2
 ;   66 	2222
 
-
 OBJNEEDVRAM	EQU	$1A*20	; FIRST OBJ TO NEED VRAM
 MIDGOT		EQU	$1D	; MIDPOINT GOT KEY
 
 GLOBOBJ		equ	$60
-
 
 ; THESE TABLES HELP TO DECODE THE KEY INTO A REAL OBJECT
 ; THE HIGH BYTE OF THE KEY IS THE OBJECT TYPE AND THE LOW BYTE IS THE #
@@ -28,11 +26,11 @@ GLOBOBJ		equ	$60
 ;.b	flags
 ;.b	aux4
 
-.macro	OBJECT o1,o2,o3,o4,o5,o6,o7,o8,o9,oa
-	dc.w	\o1
-	dc.l	\o2,\o3,\o4
-	dc.b	\o5,\o6,\o7
-	dc.b	\o8,\o9,\oa
+.macro	OBJECT oam,ai,dma,map,aux0,aux1,aux2,aux3,flags,aux4
+	dc.w	\oam
+	dc.l	\ai,\dma,\map
+	dc.b	\aux0,\aux1,\aux2
+	dc.b	\aux3,\flags,\aux4
 	.endm
 
 ;************************************************************************************************************************
@@ -56,4 +54,3 @@ GLOBOBJ		equ	$60
 	INCLUDE	"LEVELS\\W5OBJECT.S"
 
 ;************************************************************************************************************************
-

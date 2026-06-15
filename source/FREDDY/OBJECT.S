@@ -20,29 +20,29 @@ RMW     equ	2
 TRANS   equ	4
 RELEASE equ	8
 
-.macro	OBJBITS	o0,o1,o2,o3
+.macro	OBJBITS t,o1,o2,o3
 	moveq   #0,d0
-	if "\{o0}"="b"
-	move.b	\o1(a0),d0
+	if "\{t}"="b"
+		move.b	\o1(a0),d0
 	endif
-	if "\{o0}"="w"
-	move.w	\o1(a0),d0
+	if "\{t}"="w"
+		move.w	\o1(a0),d0
 	endif
-	if "\{o0}"="l"
-	move.l	\o1(a0),d0
+	if "\{t}"="l"
+		move.l	\o1(a0),d0
 	endif
 	move.l  d0,d1
 	move.l  a1,-(sp)
 
-	if \o3 = 2
+	if \o3=2
 	addq.l  #8,a1
 	endif
-	if \o3 = 3
+	if \o3=3
 	addq.l  #8,a1
 	addq.l  #8,a1
 	endif
 
-	if \o2 < 32
+	if \o2<32
 	moveq   #\o2,d2
 	lsl.l   d2,d0
 	or.l    d0,4(a1)
@@ -52,7 +52,7 @@ RELEASE equ	8
 	or.l    d1,0(a1)
 	endif
 
-	if \o2 >= 31
+	if \o2>=31
 	moveq   #\o2-32,d2
 	lsl.l   d2,d0
 	or.l    d0,(a1)
@@ -61,32 +61,33 @@ RELEASE equ	8
 	move.l  (sp)+,a1
 	.endm
 
+	_rsreset
 ; BITMAP OBJECT STRUCTURE
-obj_type			equ $00
-obj_ypos			equ $02
-obj_height			equ $04
-obj_link			equ $06
-obj_data			equ $0A
-obj_xpos			equ $0E
-obj_depth			equ $10
-obj_pitch			equ $12
-obj_dwidth			equ $14
-obj_iwidth			equ $16
-obj_index			equ $18
-obj_flags			equ $1A
-obj_firstpix		equ $1C
+	_rsw	obj_type,1
+	_rsw	obj_ypos,1
+	_rsw	obj_height,1
+	_rsl	obj_link,1
+	_rsl	obj_data,1
+	_rsw	obj_xpos,1
+	_rsw	obj_depth,1
+	_rsw	obj_pitch,1
+	_rsw	obj_dwidth,1
+	_rsw	obj_iwidth,1
+	_rsw	obj_index,1
+	_rsw	obj_flags,1
+	_rsw	obj_firstpix,1
 
 ;-SCALED BITMAP OBJECT
-obj_hscale			equ $1E
-obj_vscale			equ $20
-obj_remainder		equ $22
+	_rsw	obj_hscale,1
+	_rsw	obj_vscale,1
+	_rsw	obj_remainder,1
 	
 ;-BRANCH OBJECT
-obj_cc				equ $24
+	_rsw	obj_cc,1
 		
 ;-DATA USED FOR STOP AND GPU
-obj_gpustop_data	equ $26
-object_e			equ $2E
+	_rsl	obj_gpustop_data,2
+	_rsw	object_e,1
 
 .macro	STACKOBJ
 	lea	-object_e(sp),sp

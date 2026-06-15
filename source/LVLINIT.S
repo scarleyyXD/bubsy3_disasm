@@ -534,25 +534,11 @@ DUMMY:
 	rts
 
 BGINDEX:
-	dc.l	W5BGM
-	dc.l	W5BGM
-	dc.l	W5BGM
-
-	dc.l	W2BGM
-	dc.l	W2BGM
-	dc.l	W2BGM
-	
-	dc.l	W1BGM
-	dc.l	W1BGM
-	dc.l	W1BGM
-
-	dc.l	W4BGM
-	dc.l	W4BGM
-	dc.l	W4BGM
-
-	dc.l	W3BGM
-	dc.l	W3BGM
-	dc.l	W3BGM
+	dc.l	W5BGM,W5BGM,W5BGM
+	dc.l	W2BGM,W2BGM,W2BGM
+	dc.l	W1BGM,W1BGM,W1BGM
+	dc.l	W4BGM,W4BGM,W4BGM
+	dc.l	W3BGM,W3BGM,W3BGM
 
 MGCHARADD			equ	0
 MGMAPADD			equ	4
