@@ -40,10 +40,9 @@ GAMELOOP:
 	move.w	WINDY,WINDYOLD				;load windyold ( obviously )
 	move.w	WINDX,WINDXOLD				;load windxold (obviously )
 
-	JSR	BUBCTRL
 	JSR	TRACKWIND				;have the window track bubsy
 	jsr	center_window
-;	JSR	BUBCTRL
+	JSR	BUBCTRL
 
 	move.l	LVLCODEVEC,a0
 	jsr	(a0)					;execute

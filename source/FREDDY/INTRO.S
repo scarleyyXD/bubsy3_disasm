@@ -3135,8 +3135,6 @@ trev_gpu:
 	rts
 
 write_hi_score_to_eprom:
-	rts	;disable for now...
-
 	_rsset	-128
 	_rsb	hi_conv_buffer,128
 
@@ -3243,11 +3241,7 @@ write_hi_score_to_eprom:
 	movem.l	(sp)+,d0-a6
 	rts
 
-; TODO: look as to why this crashes
 read_hi_score_from_eprom:
-	jsr	restore_eeprom
-	rts	; crashes
-
 	movem.l	d0-a6,-(sp)
 	link	a6,#hi_conv_buffer
 	lea	hi_conv_buffer(a6),a0

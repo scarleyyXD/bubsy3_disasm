@@ -72,6 +72,7 @@ new_palette:	incbin	"specific.jag/bubtask.cpl"
 
 		include	"freddy/main.s"
 
+		.phrase
 		.data
 
 		include	"bubpal0.s"
@@ -94,6 +95,8 @@ LOAD_BUBBLE_GRAPHICS_ADDR:	dc.l	view_bubble_sprites
 LOAD_ARROW_GRAPHICS_ADDR:	dc.l	view_arrow_sprites
 LOAD_PAWSED_GRAPHICS_ADDR:	dc.l	view_paused_sprites
 							dc.l	0
+							
+		.phrase
 
 		include	"bubram.s"					;of course this will be altered
 		even
@@ -112,8 +115,12 @@ mus_startup:		ds.b	1
 jump_through_allowed:	ds.b	1
 jump_to_title:		ds.b	1
 		even
+		
+		.phrase
 			
 CLEAR_BBS_END:
+
+		.phrase
 
 mod_load_addr:		ds.b	117000
 file_area			equ	mod_load_addr+((TITLE_MOD_SIZE+8)&$fffffff8)
@@ -141,6 +148,8 @@ MAPBASE:			ds.w	700*100
 land1:				ds.b	MAP_DEF
 land2:				ds.b	MAP_DEF
 
+		.phrase
+
 	if	DETECTMODE-SCREENSHOTS
 dect_scr1:		ds.b	40*240
 dect_scr2:		ds.b	40*240
@@ -151,6 +160,8 @@ DYTAB:			ds.b	1024*16
 DOUBLETAKE:		ds.l	MAX_NUMBER_OF_MAP_COMBINATIONS
 VXTAB:			ds.w	1024
 ATTRTABLE:		ds.w	1024
+
+		.phrase
 
 view_bubble_sprites:	ds.b	13000
 view_arrow_sprites:		ds.b	17000
