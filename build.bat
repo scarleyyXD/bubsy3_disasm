@@ -24,7 +24,7 @@ ren game.tx game.txt
 :: disable these if you'd like to
 del game.abs
 del game.sym
-del game.db
+:: del game.db
 
 python "%~dp0/tools/build_rom.py"
 if %errorlevel% neq 0 goto error

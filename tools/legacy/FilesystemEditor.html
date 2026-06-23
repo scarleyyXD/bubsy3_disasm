@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div class="container">
+	<h2>Bubsy in: Fractured Furry Tales (Filesystem Editor)</h2>
+	<div class="controls">
+		<input type="file" id="grabROM" accept=".rom,.bin,.j64,.jag">
+		<button id="grabNewROM">Get New ROM</button>
+	</div>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Entry in Table</th>
+				<th>Filename</th>
+				<th>Length (hex)</th>
+			</tr>
+		</thead>
+		<tbody id="editorBody"></tbody>
+	</table>
+</div>
+
+<input type="file" id="grabFile" style="display:none">
+
+<script>
+	const table_start = 0x29FE, entry_size = 22, entry_count = 117;
+	let bub_rom = null, replace_file = -1;
+	
+	// utility function #1
+	function toHexadecimal(v) {
+		return "0x" + v.toString(16).toUpperCase();
+	}
+
+	// setup the table
+	const tbody = document.getElementById('editorBody');
+	for (let i = 0; i < entry_count - 1; i++) {
+		const addr = table_start + (i * entry_size);
+		tbody.innerHTML += `
+			<tr id="row-${i}" data-index="${i}" data-addr="${addr}">
+				<td>${i} (${toHexadecimal(addr)})</td>
+				<td><input type="text" class="name" maxlength="14" onchange="changeFilename(${i})"></td>
+				<td><type="text" class="length">__________</td>
+				<td><button onclick="replace(${i})">Replace File</button></td>
+			</tr>`;
+	}
+	
+	// this isn't efficient, but it'll be changed soon
+	// ...curses me for not knowing that much JavaScript
+	function changeFilename(i) {
+		if (!bub_rom) return;
+		const vBuf = new DataView(bub_rom.buffer);
+		const rows = document.querySelectorAll('tbody tr');
+		rows.forEach(row => {
+			const addr = parseInt(row.dataset.addr);
+			const name = row.querySelector('.name').value;
+			for (let j = 0; j < 14; j++) {
+				vBuf.setUint8((addr + 4) + j, name.charCodeAt(j));
+			}
+		});
+		refreshTable();
+    }
+
+	// load in our bubsy ROM...
+	document.getElementById('grabROM').addEventListener('change', e => {
+		const reader = new FileReader();
+		reader.onload = event => {
+			bub_rom = new Uint8Array(event.target.result);
+			refreshTable();
+		};
+		reader.readAsArrayBuffer(e.target.files[0]);
+    });
+
+	// replace an RNC file with a new one!
+	document.getElementById('grabFile').addEventListener('change', e => {
+		const file = e.target.files[0];
+		if (!bub_rom || !file) return;
+
+		const reader = new FileReader();
+		reader.onload = event => {
+			injectFile(replace_file, new Uint8Array(event.target.result));
+		};
+		reader.readAsArrayBuffer(file);
+	});
+	
+	// now to initiate the replacing!
+	function replace(i) {
+		if (!bub_rom) return; // ...but first, make sure there's a ROM first
+		replace_file = i;
+		document.getElementById('grabFile').click();
+	}
+
+	// utility function #2
+	function getTableAddress(id) {
+		return table_start + (id * entry_size);
+	}
+
+	function injectFile(i, newFile) {
+		// if we don't do this, ROM won't load on Virtual Jaguar
+		if (newFile.length % 2 != 0) {
+			let alignedData = new Uint8Array(newFile.length + 1);
+			alignedData.set(newFile);
+			newFile = alignedData;
+		}
+
+		let vBuf = new DataView(bub_rom.buffer);
+
+		const fileAddr  = getTableAddress(i); // ex. 0x22FE in ROM
+		const fileStart = (table_start + vBuf.getUint32(getTableAddress(i + 1))) + 2; // get next file size, then add 2
+		const fileEnd   = (table_start + vBuf.getUint32(getTableAddress(i + 2))) + 2; // get file size after that, then add 2
+
+		if (i > entry_count - 1)
+			fileEnd = fileStart + vBuf.getUint32(fileAddr + 18); // get file length
+		vBuf.setUint32(fileAddr + 18, newFile.length);           // set file length
+
+		const oldS = fileEnd - fileStart, newS = newFile.length;
+		const sizeDiff = newS-oldS;
+		let new_bub = new Uint8Array(bub_rom.length+sizeDiff);
+		new_bub.set(bub_rom.subarray(0, fileStart));
+		new_bub.set(newFile, fileStart);
+		new_bub.set(bub_rom.subarray(fileEnd), fileStart + newFile.length);
+
+		vBuf = new DataView(new_bub.buffer); // grab the new buffer
+		let entryAddr = getTableAddress(i + 2);
+		for (let j = i + 2; j < entry_count; j++) {
+			const entryPtr = vBuf.getUint32(entryAddr);
+			vBuf.setUint32(entryAddr, entryPtr+sizeDiff);
+			entryAddr += entry_size;
+		}
+		bub_rom = new_bub; // update existing ROM buffer
+
+		refreshTable();
+	}
+
+	function refreshTable() {
+		const vBuf = new DataView(bub_rom.buffer);
+		const rows = document.querySelectorAll('#editorBody tr');
+		rows.forEach(row => {
+			const addr = parseInt(row.dataset.addr);
+
+			// 14 bytes in filename
+			let name = "";
+			for (let i = 0; i < 14; i++) {
+				const c = vBuf.getUint8((addr + 4) + i);
+				if (c < 1) break;
+				name += String.fromCharCode(c);
+			}
+
+			const len = vBuf.getUint32(addr + 18); // ex. 0x95C1
+			const romAddr = table_start + vBuf.getUint32(addr + entry_size) + 2;
+			row.querySelector('.name').value = name;
+			row.querySelector('.length').innerHTML = toHexadecimal(len) + " (address: " + toHexadecimal(romAddr) + ")";
+		});
+	}
+	
+	// utility function #3
+	function power2(sz) {
+		return Math.pow(2, Math.ceil(Math.log2(sz)));
+	}
+
+	function pad_rom_file(data) {
+		const padder = power2(data.length);
+		const new_rom = new Uint8Array(padder);
+		new_rom.fill(0xFF);
+		new_rom.set(data);
+		return new_rom;
+	}
+
+	// now to get the ROM file...
+	document.getElementById('grabNewROM').addEventListener('click', () => {
+		if (!bub_rom) return;
+		const padded_rom = pad_rom_file(bub_rom); // pad first, otherwise VJ will crash (again)
+		const blob = new Blob([padded_rom], { type: "application/octet-stream" });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = "bubsy.j64";
+		link.click();
+	});
+</script>
+</body>
+</html>

@@ -1,28 +1,14 @@
-;FIRE_A	equ	29
-;PAUSE	equ	28
-;FIRE_B	equ	25
 RIGHT_B	equ	23
 LEFT_B	equ	22
 DOWN_B	equ	21
 UP_B	equ	20
-;KEY_1	equ	19
-;KEY_4	equ	18
-;KEY_7	equ	17
 STAR	equ	16
-;FIRE_C	equ	13
 OPTIONS	equ	09
-;KEY_2	equ	07
-;KEY_5	equ	06
-;KEY_8	equ	05
-;KEY_0	equ	04
-;KEY_3	equ	03
-;KEY_6	equ	02
-;KEY_9	equ	01
 HASH	equ	00
 
 ;compatibility
 JOYIN		equ	JOYSTICK
-JOYOUT		equ	JOYSTICK
+JOYOUT		equ	JOYIN
 
 fire_a_pressed:
 	move.l	joycur1(pc),d0

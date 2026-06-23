@@ -1,6 +1,6 @@
-.macro	CL o1,o2
-	dc.w	\o1
-	dc.l	\o2
+.macro	CL
+	dc.w	\1
+	dc.l	\2
 	.endm
 
 ; converts an apl palette to a jag RGB palette

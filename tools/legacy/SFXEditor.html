@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div class="container">
+	<div class="controls">
+		<input type="file" id="appendData" accept=".dat">
+		<button id="grabSfxData">Download NEW!!</button>
+	</div>
+
+	<table>
+		<tbody id="editorBody"></tbody>
+	</table>
+</div>
+
+<input type="file" id="insertData" style="display:none">
+
+<script>
+	let sfx_data = null, effect_count = -1, newFileID = -1;
+	const sfx_info =
+	[
+		"slowdown/skid",
+		"banana slip",
+		"boowomp 1?",
+		"explosion",
+		"boowomp 2?",
+		"pop sound",
+		"switch on/off",
+		"knock screen",
+		"enemy kill",
+		"boowomp 3?",
+		"jump/bounce",
+		"smack 1",
+		"extra life",
+		"yarn powerup",
+		"shadow boppin?",
+		"continue 1",
+		"invincible",
+		"continue 2",
+		"smack 2",
+		"manhole close",
+		"game over"
+	];
+
+	function toHexadecimal(v) {
+		return "0x" + v.toString(16).toUpperCase();
+	}
+
+	function getTableAddress(id) {
+		return 2 + (id * 4);
+	}
+	
+	function getSfxAddress(id) {
+		const vBuf = new DataView(sfx_data.buffer);
+		let sfx_addr = 2 + (effect_count * 4);
+		for (let i = 0; i < id; i++) {
+			sfx_addr += vBuf.getUint32(getTableAddress(i));
+		}
+		return sfx_addr;
+	}
+
+	document.getElementById('appendData').addEventListener('change', e => {
+		const reader = new FileReader();
+		reader.onload = event => {
+			sfx_data = new Uint8Array(event.target.result);
+			refreshTable();
+		};
+		reader.readAsArrayBuffer(e.target.files[0]);
+    });
+
+	document.getElementById('insertData').addEventListener('change', e => {
+		const file = e.target.files[0];
+		if (!sfx_data || !file) return;
+
+		const reader = new FileReader();
+		reader.onload = event => {
+			injectFile(newFileID, new Uint8Array(event.target.result));
+		};
+		reader.readAsArrayBuffer(file);
+	});
+
+	function replace(i) {
+		if (!sfx_data) return;
+		newFileID = i;
+		document.getElementById('insertData').click();
+	}
+
+	// WIP FUNC
+	function injectFile(i, newFile) {
+		// previously, these were all even lengths
+		// do this, just to be on the safe side
+		if (newFile.length % 2 > 0) {
+			let newFile_pad = new Uint8Array(newFile.length + 1);
+			newFile_pad.set(newFile);
+			newFile = newFile_pad;
+		}
+
+		// SORRY NOTHING
+		let vBuf = new DataView(sfx_data.buffer);
+
+		// set the length in the table
+		const fileAddr   = getTableAddress(i);
+		const fileLength = newFile.length;
+
+		// start replacing the sound
+		const oldFileLength = vBuf.getUint32(fileAddr);
+		const sizeDiff = fileLength - oldFileLength;
+		vBuf.setUint32(fileAddr, fileLength);	// set new sound length
+		const sfx_addr = getSfxAddress(i);
+
+		let sfx_data_new = new Uint8Array(sfx_data.length + sizeDiff);
+		sfx_data_new.set(sfx_data.subarray(0, sfx_addr));
+		sfx_data_new.set(newFile, sfx_addr);
+		sfx_data_new.set(sfx_data.subarray(sfx_addr + oldFileLength), sfx_addr + fileLength);
+		sfx_data = sfx_data_new;	// replace buffer
+
+		refreshTable();
+	}
+
+	function refreshTable() {
+		const vBuf = new DataView(sfx_data.buffer);
+		effect_count = vBuf.getUint16(0); // read from the header
+
+		let tbody = document.getElementById('editorBody');
+		tbody.innerHTML = "";
+		for (let i = 0; i < effect_count; i++) {
+			tbody.innerHTML += `
+				<tr id="row-${i}" data-id="${i}" data-addr="${getTableAddress(i)}">
+					<td>Voice ${i} (${sfx_info[i]})</td>
+					<td><type="text" class="info"></td>
+					<td><button onclick="replace(${i})">Insert PCM</button></td>
+				</tr>`;
+		}
+
+		const rows = document.querySelectorAll('#editorBody tr');
+		rows.forEach(row => {
+			const addr = parseInt(row.dataset.addr);
+			const length = vBuf.getUint32(addr); // sample length
+			row.querySelector('.info').innerHTML =
+				toHexadecimal(getSfxAddress(row.dataset.id)) + " (length: " + toHexadecimal(length) + ")";
+		});
+	}
+
+	document.getElementById('grabSfxData').addEventListener('click', () => {
+		if (!sfx_data) return;
+		const blob = new Blob([sfx_data], { type: "application/octet-stream" });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = "SFX.DAT";
+		link.click();
+	});
+</script>
+</body>
+</html>

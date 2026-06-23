@@ -27,74 +27,74 @@
 *******************************************************************
 ;macros	for sprite collation
 ;head
-.macro	shead o1
-	if \o1=0
+.macro	shead
+	if \1=0
 	dc.w	0,-25,49		;h0
 	endif
-	if \o1=1
+	if \1=1
 	dc.w	0,-24,50		;h1
 	endif
-	if \o1=2
+	if \1=2
 	dc.w	0,-25,51		;h2
 	endif
-	if \o1=3
+	if \1=3
 	dc.w	0,-26,52		;h3
 	endif
-	if \o1=4
+	if \1=4
 	dc.w	0,-26,52		;h3
 	endif
 	.endm
 
 ;wag tail
-.macro	swag o1
-	if \o1=0
+.macro	swag
+	if \1=0
 	dc.w	-20,-38,53		;w0
 	endif
-	if \o1=1
+	if \1=1
 	dc.w	-24,-37,54		;w1
 	endif
-	if \o1=2
+	if \1=2
 	dc.w	-31,-33,55		;w2
 	endif
 
-	if \o1=3
+	if \1=3
 	dc.w	-28,-26,56		;t0
 	endif
-	if \o1=4
+	if \1=4
 	dc.w	-27,-27,57		;t1
 	endif
-	if \o1=5
+	if \1=5
 	dc.w	-28,-36,58		;t2
 	endif
-	if \o1=6
+	if \1=6
 	dc.w	-27,-32,59		;t3
 	endif
-	if \o1=7
+	if \1=7
 	dc.w	-31,-29,60		;t4
 	endif
 	.endm
 
-.macro	stoss o1
-	if \o1=0
+.macro	stoss
+	if \1=0
 	dc.w	-24,-48,45		;sw0
 	endif
-	if \o1=1
+	if \1=1
 	dc.w	-22,-67,46		;sw1
 	endif
-	if \o1=2
+	if \1=2
 	dc.w	-24,-71,47		;sw2
 	endif
 
-	if \o1=3
+	if \1=3
 	dc.w	-22,-76,48		;st3
 	endif
-	if \o1=4
+	if \1=4
 	dc.w	-24,-71,45		;st4
 	endif
-	if \o1=5
+	if \1=5
 	dc.w	-22,-67,46		;st5
 	endif
-	if \o1=6
+	if \1=6
 	dc.w	-24,-48,47		;st6
 	endif
 	.endm
@@ -111,53 +111,53 @@
 
 ***	macros for collision detection
 
-.macro	Sshead o1
+.macro	Sshead
 	dc.l	0,0
 	dc.w	0,0,20,-6
 	
-	if \o1=0
+	if \1=0
 	dc.w	14,-24		;h0
 	endif
-	if \o1=1
+	if \1=1
 	dc.w	14,-22		;h1
 	endif
-	if \o1=2
+	if \1=2
 	dc.w	11,-23		;h2
 	endif
-	if \o1=3
+	if \1=3
 	dc.w	14,-24		;h3
 	endif
-	if \o1=4
+	if \1=4
 	dc.w	14,-24		;h3
 	endif
 	.endm
 
 ;wag tail
-.macro	Sswag o1
+.macro	Sswag
 	DC.W	-2,-22,-17,-1
-	if \o1=0
+	if \1=0
 	dc.w	-17,-37			;w0
 	endif
-	if \o1=1
+	if \1=1
 	dc.w	-22,-34			;w1
 	endif
-	if \o1=2
+	if \1=2
 	dc.w	-29,-30			;w2
 	endif
 
-	if \o1=3
+	if \1=3
 	dc.w	-23,-24			;t0
 	endif
-	if \o1=4
+	if \1=4
 	dc.w	-23,-25			;t1
 	endif
-	if \o1=5
+	if \1=5
 	dc.w	-23,-28			;t2
 	endif
-	if \o1=6
+	if \1=6
 	dc.w	-18,-28			;t3
 	endif
-	if \o1=7
+	if \1=7
 	dc.w	-25,-21			;t4
 	endif
 	.endm
@@ -173,20 +173,20 @@
 	dc.w	\od-\o1,-(\o2+\oe)
 	.endm
 
-.macro	Sswing o1
-	if \o1=0
+.macro	Sswing
+	if \1=0
 	Soff	16,00,00,03,16,00,30,50,20,27,53,40,67,19
 	endif
-	if \o1=1
+	if \1=1
 	Soff	16,00,00,03,16,00,01,13,22,25,48,12,62,02
 	endif
-	if \o1=2
+	if \1=2
 	Soff	16,00,00,03,16,00,02,18,19,25,35,20,51,06
 	endif
-	if \o1=3
+	if \1=3
 	Soff	16,00,00,03,16,00,37,02,03,20,18,33,44,17
 	endif
-	if \o1=4
+	if \1=4
 	Soff	17,00,00,03,16,00,38,04,15,22,33,21,21,36
 	endif
 	endm

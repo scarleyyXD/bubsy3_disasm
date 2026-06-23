@@ -1,33 +1,40 @@
+	include	"rsutil.inc"	;it just helps...
+	
+.macro	elem
+	_rs\2	\1,\3
+	.endm
+
 ;************************************************************************
 ;*
 ;* OBJECT STRUCTURE DEFINITION
 ;*
 ;************************************************************************
 
-OBJX		equ 0		;00	; PIXEL X
-OBJFX		equ 2		;02 	; X FRACTION
-OBJY		equ 4		;04	; PIXEL Y
-OBJFY		equ 6		;06	; Y FRACTION		; ***** 18 BYTES WITH NO CORRELATION TO BUBSY'S OBJ DEF
-OBJKEY		equ 8		;08 	; KEY
-OBJFRAMECTR	equ 10		;0A				; ***** THE FOLLOWING 20 (WAS 16) BYTES ARE IN THE OBJECT DESCRIPTION
-OBJOAM0		equ 12	 	;0C	; OBJEDT OAMDATA (H/V/P/PAL/FRAME)
-OBJAI		equ 14		;0E 	; AI VECTOR
-OBJINITDMA	equ 18		;12 	; LONG ADDRESS OF INITIAL DMA
-OBJMAP		equ 22		;16	; FRAME MAP ADDRES	; ***** 5 BYTES CORRELATE TO BUB DEF VX.W,VY.W,FLAGS.B
-OBJVXY		equ 26		;1A
-OBJVX		equ 26		;1A
-OBJAUX0		equ 26		;1A
-OBJAUX1		equ 27		;1B
-OBJVY		equ 28		;1C
-OBJAUX2		equ 28	 	;1C
-OBJAUX3		equ 29		;1D
-OBJAUX4		equ 30		;1E				;*******************************
-OBJAUX5		equ 31		;1F
-OBJAUX6		equ 32		;20
-OBJAUX7		equ 33		;21
-OBJFLAGS	equ 34		;22	; FLAGS (DUH)
-OBJFRAME	equ 35		;23	; OBJECT FRAME MOVED FOR ALIGNMENT
-OBJLEN		equ 36		;24	; LENGTH OF AN OBJECT ENTRY
+	_rsreset
+	elem	OBJX,w,1		;00	; PIXEL X
+	elem	OBJFX,w,1		;02 	; X FRACTION
+	elem	OBJY,w,1		;04	; PIXEL Y
+	elem	OBJFY,w,1		;06	; Y FRACTION		; ***** 18 BYTES WITH NO CORRELATION TO BUBSY'S OBJ DEF
+	elem	OBJKEY,w,1		;08 	; KEY
+	elem	OBJFRAMECTR,w,1		;0A				; ***** THE FOLLOWING 20 (WAS 16) BYTES ARE IN THE OBJECT DESCRIPTION
+	elem	OBJOAM0,w,1	 	;0C	; OBJEDT OAMDATA (H/V/P/PAL/FRAME)
+	elem	OBJAI,l,1		;0E 	; AI VECTOR
+	elem	OBJINITDMA,l,1		;12 	; LONG ADDRESS OF INITIAL DMA
+	elem	OBJMAP,l,1		;16	; FRAME MAP ADDRES	; ***** 5 BYTES CORRELATE TO BUB DEF VX.W,VY.W,FLAGS.B
+	elem	OBJVXY,b,0		;1A
+	elem	OBJVX,b,0		;1A
+	elem	OBJAUX0,b,1		;1A
+	elem	OBJAUX1,b,1		;1B
+	elem	OBJVY,b,0		;1C
+	elem	OBJAUX2,b,1	 	;1C
+	elem	OBJAUX3,b,1		;1D
+	elem	OBJAUX4,b,1		;1E				;*******************************
+	elem	OBJAUX5,b,1		;1F
+	elem	OBJAUX6,b,1		;20
+	elem	OBJAUX7,b,1		;21
+	elem	OBJFLAGS,b,1		;22	; FLAGS (DUH)
+	elem	OBJFRAME,b,1		;23	; OBJECT FRAME MOVED FOR ALIGNMENT
+	elem	OBJLEN,b,0		;24	; LENGTH OF AN OBJECT ENTRY
 
 	; OBJECT DATA AREA
 NUMOBJS		EQU 	40	; NUMBER OF OBJECT ENTRIES
@@ -38,25 +45,26 @@ NUMOBJS		EQU 	40	; NUMBER OF OBJECT ENTRIES
 ;*
 ;************************************************************************
 
-LVLPALETTE		equ 0
-LVLSCRIPT		equ 4
-LVLBRRLIST		equ 8
-LVLMUSIC		equ 12
-LVLCODE			equ 16
-LVLINITCODE		equ 20
-LVLAILIST		equ 24
-LVLWARPLIST		equ 28
-LVLTAKELIST		equ 32
-LVLFLIPLIST		equ 36
-LVLMUSICLIST	equ 40
-LVLINITX		equ 44
-LVLINITY		equ 46
-LVLLOADX		equ 48
-LVLLOADY		equ 50
-LVLLOADCODE		equ 52
-LVLLOADINIT		equ 56
-LVLLOADANIM		equ 60
-LVLTABLEN		equ 62
+	_rsreset
+	elem	LVLPALETTE,l,1
+	elem	LVLSCRIPT,l,1
+	elem	LVLBRRLIST,l,1
+	elem	LVLMUSIC,l,1
+	elem	LVLCODE,l,1
+	elem	LVLINITCODE,l,1
+	elem	LVLAILIST,l,1
+	elem	LVLWARPLIST,l,1
+	elem	LVLTAKELIST,l,1
+	elem	LVLFLIPLIST,l,1
+	elem	LVLMUSICLIST,l,1
+	elem	LVLINITX,w,1
+	elem	LVLINITY,w,1
+	elem	LVLLOADX,w,1
+	elem	LVLLOADY,w,1
+	elem	LVLLOADCODE,l,1
+	elem	LVLLOADINIT,l,1
+	elem	LVLLOADANIM,w,1
+	elem	LVLTABLEN,b,0
 
 ;************************************************************************
 ;*
@@ -64,10 +72,11 @@ LVLTABLEN		equ 62
 ;*
 ;************************************************************************
 
-SCRX	equ 0			; PIXEL X
-SCRY	equ 2			; PIXEL Y
-SCRKEY	equ 4			; KEY
-SCRLEN	equ 6			; LENGTH OF A SCRIPT ENTRY
+	_rsreset
+	elem	SCRX,w,1			; PIXEL X
+	elem	SCRY,w,1			; PIXEL Y
+	elem	SCRKEY,w,1			; KEY
+	elem	SCRLEN,b,0			; LENGTH OF A SCRIPT ENTRY
 
 ;************************************************************************
 ;*
@@ -418,7 +427,7 @@ MapD8	equ	%0000000000010000
 MapD16	equ	%0000000000100000
 MapD32	equ	%0000000000110000
 
-******************************
+;=============================
 
 ARROW1	equ	6
 ARROW2	equ	0

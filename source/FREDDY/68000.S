@@ -1,19 +1,19 @@
-.macro	FRACDIV O1,O2
-	tst.w	\O1
+.macro	FRACDIV
+	tst.w	\1
 	bne.s	.1\~
-	moveq	#0,\O2
+	moveq	#0,\2
 	bra.s	.2\~
 .1\~:
-	ext.l	\O2
-	divu	\O1,\O2
-	swap	\O2
+	ext.l	\2
+	divu	\1,\2
+	swap	\2
 	move.l	d7,-(sp)
 	moveq	#1,d7
 	swap	d7
-	divu	\O1,d7
-	mulu	\O2,d7
-	clr.w	\O2
-	add.l	d7,\O2
+	divu	\1,d7
+	mulu	\2,d7
+	clr.w	\2
+	add.l	d7,\2
 	move.l	(sp)+,d7
 .2\~:
 	.endm

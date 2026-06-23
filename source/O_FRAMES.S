@@ -1,7 +1,7 @@
 SIDD	equ	45
 
-.macro	make_current_world	O1
-	rs_counter	set	\O1*$10000
+.macro	make_current_world
+	rs_counter	set	\1*$10000
 	.endm
 .macro	add_world_sprites label,volume
 	\label	equ	rs_counter

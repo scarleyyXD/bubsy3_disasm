@@ -1,4 +1,3 @@
-
 ;offsets for each object in the user object list
 O_XPOS		equ	0	;word	object xpos
 O_YPOS		equ	2	;word	object ypos
@@ -37,11 +36,7 @@ TRANS_ON	equ	4	;bit 2 = transparent flag
 RELEASE_OFF	equ	0
 RELEASE_ON	equ	8	;bit 3 = release
 
-
 ;object processing macros
-
-;		if 0
-
 
 ;---------------------------------------------------------------------
 ;
@@ -192,7 +187,4 @@ RELEASE_ON	equ	8	;bit 3 = release
 	or.l	d0,8(\2)	;* update
 	.endm
 
-
 ;end_Macros
-
-	;.endm

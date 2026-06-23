@@ -16,7 +16,7 @@ boot_up_here:	jmp	setup_jaguar(pc)
 	include	"freddy/object.s"
 	include	"freddy/sprite.s"
 	include	"freddy/color.s"
-;;;;	include	"joypad.s"
+;;;;	include	"freddy/joypad.s"
 	include	"freddy/setup.s"
 	include	"freddy/interupt.s"
 	include	"freddy/gpustuff.s"

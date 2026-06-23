@@ -1,9 +1,6 @@
 ;*********************************
-;all sprites must be facing right
+; all sprites must be facing right!!
 ;*********************************
-
-;todo
-;touches
 
 ;*******************************************
 ;
@@ -65,7 +62,6 @@ bubsy_start:
 	move.l	d0,G_CTRL		;make sure GPU is stopped
 
 	lea	BASE,a5
-
 	jsr	INIT_SOU		;start the music driver
 
 	lea	CLEAR_BBS_START,a0	;clear all of my bss section - only when the program 1st runs.
@@ -152,5 +148,5 @@ andy_start:
 	sf	NMIVECSEL
 	
 	move.l	#VBlank,vbl_routine
-	include	"specific.jag\\set_up.s"	;ok
-	include	"worldrt.s"		;initialise code first
+	include	"specific.jag\\set_up.s"
+	include	"worldrt.s"

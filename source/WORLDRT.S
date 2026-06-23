@@ -1,31 +1,21 @@
-;;		check all file loading - into correct place in memory
-
 		.text
 
-		include	"jaguar.inc"		;ok
+		include	"jaguar.inc"
 
-		include	"specific.jag/jaguar.s"				;ok
-		include	"specific.jag/vidinit.s"			;ok
+		include	"specific.jag/jaguar.s"
+		include	"specific.jag/vidinit.s"
 		
-		include	"bubboot.s"				;ok
+		include	"bubboot.s"
 
-		include	"sega.asm"				;needs looking at	
+		include	"sega.asm"
 
 		even
 	
-		include	"sega.inc"				;ok
-		include "o_frames.s"			;update as memory is required
-		include	"b_frames.s"			;ok
-
-OBJLEN2			equ	OBJLEN*2
-OBJLEN4			equ	OBJLEN*4
-OBJLEN7			equ	OBJLEN*7
-
-;;;		music related stuff
-TITLESBLOCK		equ	0				;addr where music driver is loaded into - I don't load - via NEW_DOWNLOAD_APU
+		include	"sega.inc"
+		include "o_frames.s"
+		include	"b_frames.s"
 
 FADER:
-INITAPU:
 SegaFader:
 		rts
 
@@ -34,40 +24,41 @@ SegaFader:
 		if	SCREENSHOTS
 		include	"specific.jag/freeze.s"
 		endif
-		include	"bubctrl.s"					;ok
-		include	"gameloop.s"				;ok
-		include	"snesctrl.s"				;ok
+		include	"bubctrl.s"
+		include	"gameloop.s"
+		include	"snesctrl.s"
 		
-		include	"lvlinit.s"					;ok - check allocating memory correctly
-		include	"maphndlr.s"				;rewrite for bitmap screen and the attributes..
-		include	"setoverl.s"				;ok - I think
-		include	"title1.s"					;ok - I think - load routines look at and screen handling
-		include	"w1lvlcod.s" 				;ok - I think - keep an an eye on as it had some sega specific stuff in it
+		include	"lvlinit.s"
+		include	"maphndlr.s"
+		include	"setoverl.s"
+		include	"title1.s"
+		include	"w1lvlcod.s"
 		
-		include	"stuff.map/init2.s"			;init2.s
+		include	"stuff.map/init2.s"
 		
-		include	"bubint.s"					;ok - but examine parallax stuff
-		include	"lvltabs.s"					;ok
-		include	"objtabs.s"					;ok
+		include	"bubint.s"
+		include	"lvltabs.s"
+		include	"objtabs.s"
 		
 new_palette:	incbin	"specific.jag/bubtask.cpl"
-		include	"stuff.map/scroll2a.s"	;new2.s	
+
+		include	"stuff.map/scroll2a.s"
 		
-		include	"draw_oam.s"				;seems ok
-		include	"dma_vram.s"				;seems ok
-		include	"setupbub.s"				;seems ok
+		include	"draw_oam.s"
+		include	"dma_vram.s"
+		include	"setupbub.s"
 		include	"bubdata.s"					;must follow on
 		
 		if	DETECTMODE
 		include	"specific.jag/detect.s"
 		endif
-		include	"loadcode.s"					;ok
-		include	"scrhndlr.s"					;ok
-		include	"getsin.s"					;ok
-		include	"objhndlr.s"					;ok
-		include	"bubbop.s"					;ok
+		include	"loadcode.s"
+		include	"scrhndlr.s"
+		include	"getsin.s"
+		include	"objhndlr.s"
+		include	"bubbop.s"
 
-		include	"worldai.s"					;ok - I think
+		include	"worldai.s"
 		include	"enemymap.s"
 
 		include	"freddy/main.s"

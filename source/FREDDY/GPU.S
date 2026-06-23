@@ -1,5 +1,7 @@
 	include	"jaguar.inc"
-
+	
+	include	"rsutil.inc"	;it just helps...
+	
 	include	"freddy/equates.s"
 	include	"freddy/macros.s"
 	include	"freddy/variable.s"

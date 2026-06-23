@@ -6,8 +6,8 @@
 	b_frame	set	b_frame+1
 	.endm
 
-.macro	add_frame_to_bubsy o1
-	\o1	equ	b_frame
+.macro	add_frame_to_bubsy
+	\1	equ	b_frame
 	b_frame	set	b_frame+1
 	.endm
 
