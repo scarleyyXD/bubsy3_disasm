@@ -11,7 +11,7 @@ Known issues with the source currently:
 * ~~Title screen, credits, and hi-score menu display incorrectly~~
 * ~~Level scroll routines are currently messed up~~
 * ~~Sound effects are not enabled by default (see EEPROM issue)~~
-* A few entities are scripted/mapped correctly (see World 2's boss)
+* ~~A few entities aren't scripted/mapped correctly (see World 2's boss)~~
 
 If you'd like to contribute, shoot up a PR (pull request) and I will accept any fixes when I can.
 

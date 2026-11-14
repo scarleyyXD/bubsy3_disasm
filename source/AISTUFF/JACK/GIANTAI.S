@@ -620,7 +620,7 @@ COLLISION_DATA:			dc.l	0
 ACTIVEBULLETS:			dc.b	0
 
 ************************ X Steps For Walking Frames ***********************
-
+	even
 steps:
 	dc.w	-6
 	dc.w	-10
